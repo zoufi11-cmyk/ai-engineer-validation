@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>v8 Core Validation Architecture Review</title>
+  <style>
+    :root {
+      --bg: #0b1020;
+      --panel: #111833;
+      --text: #e8ecf7;
+      --muted: #b7c0d8;
+      --accent: #6ea8fe;
+      --border: #243052;
+      --code: #0a0f1d;
+      --ok: #7ee787;
+      --warn: #ffcc66;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Inter, Segoe UI, Roboto, Arial, sans-serif;
+      background: linear-gradient(180deg, var(--bg), #090d18 100%);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 48px 20px 80px;
+    }
+
+    .hero {
+      background: rgba(17, 24, 51, 0.92);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 28px;
+      margin-bottom: 24px;
+    }
+
+    h1, h2, h3 {
+      line-height: 1.2;
+      margin-top: 0;
+    }
+
+    h1 {
+      font-size: 2.2rem;
+      margin-bottom: 10px;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      font-size: 1.05rem;
+      margin-bottom: 0;
+    }
+
+    .card {
+      background: rgba(17, 24, 51, 0.75);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 18px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 16px;
+    }
+
+    code, pre {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    }
+
+    pre {
+      background: var(--code);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 18px;
+      overflow-x: auto;
+      color: #d7def0;
+      font-size: 0.95rem;
+      margin: 0;
+      white-space: pre-wrap;
+    }
+
+    .tag {
+      display: inline-block;
+      padding: 4px 10px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      color: var(--accent);
+      margin-right: 8px;
+      margin-bottom: 8px;
+      font-size: 0.86rem;
+    }
+
+    ul {
+      margin: 12px 0 0;
+      padding-left: 20px;
+    }
+
+    li { margin: 6px 0; }
+
+    .ok { color: var(--ok); }
+    .warn { color: var(--warn); }
+
+    .table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+      overflow: hidden;
+      border-radius: 12px;
+    }
+
+    .table th, .table td {
+      border: 1px solid var(--border);
+      padding: 12px 14px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .table th {
+      background: rgba(110, 168, 254, 0.12);
+    }
+
+    .footer {
+      color: var(--muted);
+      font-size: 0.92rem;
+      margin-top: 18px;
+    }
+
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <section class="hero">
+      <h1>v8 Core Validation Architecture Review</h1>
+      <p class="subtitle">
+        Commit 1: canonical IDs, branded types, validation boundary, and testable domain isolation.
+      </p>
+      <p>
+        This document summarizes the current implementation strategy for the ID boundary and the validation model.
+        The goal is to keep the domain clean, make parsing deterministic, and ensure every branded ID passes through one controlled boundary only.
+      </p>
+    </section>
+
+    <section class="card">
+      <h2>Architecture Summary</h2>
+      <div class="grid">
+        <div>
+          <span class="tag">unknown input</span>
+          <span class="tag">Zod validation</span>
+          <span class="tag">canonical format</span>
+          <span class="tag">brandId()</span>
+          <span class="tag">Domain ID</span>
+        </div>
+        <div>
+          <p>
+            The ID pipeline is intentionally simple:
+            <strong>external input</strong> enters as <code>unknown</code>,
+            then passes structural validation, canonical ID format validation,
+            and finally the controlled branding function.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Core Contract</h2>
+      <pre><code>unknown
+  ↓
+Zod / structural validation
+  ↓
+canonical ID format validation
+  ↓
+brandId()
+  ↓
+ParseResult&lt;CaseId&gt;
+  ↓
+Domain Entity</code></pre>
+      <p class="footer">
+        The important rule is that <code>brandId()</code> is not a validator. It is the last controlled boundary after validation already succeeded.
+      </p>
+    </section>
+
+    <section class="card">
+      <h2>Commit 1 Scope</h2>
+      <pre><code>src/
+├── domain/
+│   └── valueObjects/
+│       └── ids.ts
+│
+├── validation/
+│   └── ids/
+│       ├── brandId.ts
+│       ├── createIdParser.ts
+│       ├── parseCaseId.ts
+│       ├── parseFactId.ts
+│       ├── parseFactRecordId.ts
+│       ├── parseEvidenceId.ts
+│       ├── parseFileAssetId.ts
+│       ├── parseVerificationId.ts
+│       ├── parseContradictionId.ts
+│       └── parseAuditEventId.ts
+│
+└── tests/
+    └── validation/
+        └── ids/
+            ├── parseCaseId.test.ts
+            ├── parseFactId.test.ts
+            ├── parseFactRecordId.test.ts
+            ├── brand-separation.test.ts
+            └── round-trip.test.ts</code></pre>
+    </section>
+
+    <section class="card">
+      <h2>Success Criteria</h2>
+      <ul>
+        <li class="ok">CaseId, FactId, FactRecordId, and the other branded IDs are compile-time incompatible.</li>
+        <li class="ok">Invalid IDs are rejected at runtime.</li>
+        <li class="ok">Wrong prefixes are rejected.</li>
+        <li class="ok">Empty and whitespace-only IDs are rejected.</li>
+        <li class="ok">Canonical IDs parse deterministically.</li>
+        <li class="ok">parse → serialize → parse is stable.</li>
+        <li class="ok">No <code>as CaseId</code> outside the validation boundary.</li>
+        <li class="ok">The domain does not know Zod, React, or persistence.</li>
+        <li class="ok">Legacy IDs are handled only by migration logic, not by canonical parsing.</li>
+        <li class="ok">No RootState, reducer, or UI coupling yet.</li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <h2>Assessment So Far</h2>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Area</th>
+            <th>Status</th>
+            <th>Comment</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>ID boundary</td>
+            <td class="ok">Strong</td>
+            <td>Single controlled branding point keeps the architecture auditable.</td>
+          </tr>
+          <tr>
+            <td>Domain isolation</td>
+            <td class="ok">Strong</td>
+            <td>The domain stays independent from validation and persistence concerns.</td>
+          </tr>
+          <tr>
+            <td>Normalization readiness</td>
+            <td class="ok">Strong</td>
+            <td>The plan fits a flat entity model with selectors deriving views later.</td>
+          </tr>
+          <tr>
+            <td>Type safety proof</td>
+            <td class="warn">Partial</td>
+            <td>Runtime tests are good, but type-level tests are still needed for full compile-time guarantees.</td>
+          </tr>
+          <tr>
+            <td>Product completeness</td>
+            <td class="warn">Early</td>
+            <td>Entities, invariants, validated root state, reducer, and selectors are not implemented yet.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="card">
+      <h2>Next Commit Direction</h2>
+      <ul>
+        <li>Case, Fact, FactRecord.</li>
+        <li>Referential integrity.</li>
+        <li>ValidatedRootState.</li>
+        <li>Typed actions.</li>
+        <li>Pure reducer.</li>
+      </ul>
+      <p>
+        At this stage, the architecture is strong enough to start building the actual v8 core.
+        The next value comes from entities and invariants, not from more ID theory.
+      </p>
+    </section>
+
+    <section class="card">
+      <h2>Engineering Verdict</h2>
+      <p>
+        This is a clean and defensible design for a validation-heavy TypeScript application.
+        It is especially good for teams that want explicit parsing boundaries, stable branded types,
+        and a normalized state model that remains easy to audit.
+      </p>
+      <p>
+        For LinkedIn validation from engineers, this version works well because it is precise,
+        short enough to scan, and structured enough to review technically.
+      </p>
+    </section>
+  </div>
+</body>
+</html>
