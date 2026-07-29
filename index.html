@@ -120,7 +120,7 @@ function renderFiles(){
   const x=compute();
   const missingPlans=state.answers.plans==='Όχι';
   const unknownPlans=state.answers.plans==='Δεν γνωρίζω';
-  return `<div class="mobile">${titleBlock(`${state.caseData.workType} — ${state.caseData.address}`,x.overall)}<div class="content">${back()}<h2>Αρχεία & τεκμήρια</h2><p class="sub">Πρόσθεσε PDF, CAD ή εικόνες ώστε ο φάκελος να δείχνει τι υπάρχει πραγματικά      <div class="field">
+  return `<div class="mobile">${titleBlock(`${state.caseData.workType} — ${state.caseData.address}`,x.overall)}<div class="content">${back()}<h2>Αρχεία & τεκμήρια</h2><p class="sub">Πρόσθεσε PDF, CAD ή εικόνες ώστε ο φάκελος να δείχνει τι υπάρχει πραγματικά<div class="field">
         <div class="label">Upload αρχείων</div>
         <div class="inputwrap" style="border-style:dashed">
           <input id="fileInput" type="file" multiple accept=".pdf,.dwg,.dxf,.jpg,.jpeg,.png">
