@@ -11,9 +11,9 @@
 body{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:#e5e3db;color:var(--ink);min-height:100dvh;display:flex;justify-content:center}
 #root{width:100%;max-width:430px;min-height:100dvh;background:var(--paper);box-shadow:0 0 40px rgba(0,0,0,.08);display:flex;flex-direction:column}
 button{font-family:inherit;cursor:pointer;border:none;background:none}
-input{font-family:inherit}
-button:focus-visible,input:focus-visible{outline:2px solid var(--navy);outline-offset:2px}
-button:disabled{opacity:.5;cursor:not-allowed}
+input,select{font-family:inherit}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--navy);outline-offset:2px}
+button:disabled{opacity:.45;cursor:not-allowed}
 </style>
 </head>
 <body>
@@ -21,193 +21,411 @@ button:disabled{opacity:.5;cursor:not-allowed}
 <script>
 (function(){
 const T={paper:"#F5F4EF",ink:"#23272B",muted:"#6B6B63",line:"#DBD6C9",navy:"#1D3557",soft:"#2A466E",ok:"#3A6B4C",okBg:"#E7EFE8",warn:"#A8791F",warnBg:"#F5EEDC",bad:"#A8412F",badBg:"#F5E4DF",info:"#EEF1F5"};
+const KEY="ai-senior-cases-v1";
 
-let screen="home", caseData={customer:"",address:"",workType:""}, answers={}, files=[], qIndex=0;
+const WORK_TYPES=["Άδεια Μικρής Κλίμακας","ΠΕΑ","Νέα Οικοδομική Άδεια","Τοπογραφικό","Αυθαίρετο","Αυτοψία"];
 
-const QUESTIONS={
-  "ΠΕΑ":[
-    {id:"year",text:"Ποιο είναι το έτος κατασκευής;",type:"text",ph:"π.χ. 1972",why:"Το καταγράφουμε ως δήλωση. Δεν θεωρείται επιβεβαιωμένο χωρίς έγγραφο."},
-    {id:"plans",text:"Υπάρχουν διαθέσιμα αρχιτεκτονικά σχέδια;",type:"choice",opts:["Ναι","Όχι","Δεν γνωρίζω"],why:"Χωρίς κάτοψη ο φάκελος κινδυνεύει να επιστραφεί. Αν λείπουν, το επόμενο βήμα είναι αυτοψία."},
-    {id:"permit",text:"Υπάρχει οικοδομική άδεια;",type:"choice",opts:["Ναι","Όχι","Δεν γνωρίζω"],why:"Βασικό δικαιολογητικό. Αν λείπει, σημειώνεται ως κρίσιμο κενό."},
-    {id:"kaek",text:"Υπάρχει διαθέσιμος ΚΑΕΚ;",type:"choice",opts:["Ναι","Όχι","Δεν γνωρίζω"],why:"Συνδέει το ακίνητο με το Κτηματολόγιο."},
-    {id:"insulation",text:"Υπάρχει μόνωση στην τοιχοποιία;",type:"choice",opts:["Ναι","Όχι","Δεν γνωρίζω"],why:"Σημαντικό για ενεργειακή αξιολόγηση. Επιβεβαιώνεται στην αυτοψία."}
-  ],
-  "Τοπογραφικό":[
-    {id:"topo_purpose",text:"Για ποιο σκοπό χρειάζεται το τοπογραφικό;",type:"choice",opts:["Συμβόλαιο","Οικοδομική άδεια","Τακτοποίηση","Κτηματολόγιο","Άλλο"],why:"Ο σκοπός καθορίζει ποια στοιχεία είναι κρίσιμα."},
-    {id:"old_topo",text:"Υπάρχει παλαιότερο τοπογραφικό διάγραμμα;",type:"choice",opts:["Ναι","Όχι","Δεν γνωρίζω"],why:"Ακόμα και παλιό διάγραμμα μειώνει λάθη."},
-    {id:"titles",text:"Υπάρχουν διαθέσιμοι τίτλοι ιδιοκτησίας;",type:"choice",opts:["Ναι","Όχι","Δεν γνωρίζω"],why:"Απαραίτητοι για τον προσδιορισμό ορίων."},
-    {id:"kaek",text:"Υπάρχει διαθέσιμος ΚΑΕΚ;",type:"choice",opts:["Ναι","Όχι","Δεν γνωρίζω"],why:"Κρίσιμο για σύνδεση με Κτηματολόγιο."}
-  ],
-  "Αυθαίρετο":[
-    {id:"year",text:"Ποιο είναι το έτος κατασκευής;",type:"text",ph:"π.χ. 1985",why:"Βοηθά στον χαρακτηρισμό. Καταγράφεται ως δήλωση."},
-    {id:"plans",text:"Υπάρχουν διαθέσιμα σχέδια;",type:"choice",opts:["Ναι","Όχι","Δεν γνωρίζω"],why:"Χωρίς σχέδια η αποτύπωση γίνεται απαραίτητη."},
-    {id:"permit",text:"Υπάρχει οικοδομική άδεια;",type:"choice",opts:["Ναι","Όχι","Δεν γνωρίζω"],why:"Καθορίζει το πλαίσιο ελέγχου."},
-    {id:"deviation",text:"Υπάρχουν εμφανείς αποκλίσεις;",type:"choice",opts:["Ναι","Όχι","Δεν γνωρίζω"],why:"Καταγράφουμε αυτό που φαίνεται. Δεν βγάζουμε τελική κρίση εδώ."}
-  ],
-  "default":[
-    {id:"year",text:"Ποιο είναι το έτος κατασκευής;",type:"text",ph:"π.χ. 1972",why:"Το καταγράφουμε ως δήλωση."},
-    {id:"plans",text:"Υπάρχουν διαθέσιμα αρχιτεκτονικά σχέδια;",type:"choice",opts:["Ναι","Όχι","Δεν γνωρίζω"],why:"Χωρίς κάτοψη αυξάνεται ο κίνδυνος επιστροφής φακέλου."},
-    {id:"permit",text:"Υπάρχει οικοδομική άδεια;",type:"choice",opts:["Ναι","Όχι","Δεν γνωρίζω"],why:"Βασικό δικαιολογητικό."},
-    {id:"kaek",text:"Υπάρχει διαθέσιμος ΚΑΕΚ;",type:"choice",opts:["Ναι","Όχι","Δεν γνωρίζω"],why:"Συνδέει με Κτηματολόγιο."}
-  ]
-};
+let screen="home";
+let cases=[];          // αποθηκευμένες υποθέσεις
+let currentId=null;    // ενεργή υπόθεση
+let draft={customer:"",phone:"",address:"",workType:""};
 
-function getQs(){return QUESTIONS[caseData.workType]||QUESTIONS["default"];}
+function uid(){return "c_"+Date.now().toString(36)+Math.random().toString(36).slice(2,7)}
 
-function isYearValid(val){
-  if(!val) return false;
-  if(!/^\d{4}$/.test(val.trim())) return false;
-  const y=parseInt(val.trim(),10);
-  return y>=1800 && y<=new Date().getFullYear();
+function load(){
+  try{
+    const raw=localStorage.getItem(KEY);
+    if(raw) cases=JSON.parse(raw)||[];
+  }catch(e){cases=[]}
 }
 
-function build(){
-  const yearStr=(answers.year||"").trim();
-  const yearOk=isYearValid(yearStr);
-  const year=yearOk?parseInt(yearStr,10):null;
-  const old=yearOk&&year<1980;
-  const isTopo=caseData.workType==="Τοπογραφικό";
-  const pdfs=files.filter(f=>/\.pdf$/i.test(f.name)).length;
-  const cads=files.filter(f=>/\.(dwg|dxf)$/i.test(f.name)).length;
-  const images=files.filter(f=>/\.(jpe?g|png)$/i.test(f.name)).length;
+function save(){
+  try{localStorage.setItem(KEY,JSON.stringify(cases))}catch(e){}
+}
 
-  const facts=[];
-  if(isTopo){
-    facts.push(
-      {name:"Σκοπός",value:answers.topo_purpose||"—",status:answers.topo_purpose?"declared":"missing"},
-      {name:"Παλαιότερο τοπογραφικό",value:answers.old_topo||"—",status:answers.old_topo==="Ναι"?"declared":answers.old_topo==="Όχι"?"missing":"needs_check"},
-      {name:"Τίτλοι ιδιοκτησίας",value:answers.titles||"—",status:answers.titles==="Ναι"?"declared":answers.titles==="Όχι"?"missing":"needs_check"},
-      {name:"ΚΑΕΚ",value:answers.kaek||"—",status:answers.kaek==="Ναι"?"declared":answers.kaek==="Όχι"?"missing":"needs_check"},
-      {name:"Αποτύπωση",value:"Δεν έχει γίνει",status:"not_done"}
-    );
-  }else{
-    facts.push(
-      {name:"Έτος κατασκευής",value:yearOk?String(year):"—",status:yearOk?"declared":"missing"},
-      {name:"Αρχιτεκτονικά σχέδια",value:answers.plans||"—",status:answers.plans==="Ναι"?"declared":answers.plans==="Όχι"?"missing":"needs_check"},
-      {name:"Οικοδομική άδεια",value:answers.permit||"—",status:answers.permit==="Ναι"?"declared":answers.permit==="Όχι"?"missing":"needs_check"},
-      {name:"ΚΑΕΚ",value:answers.kaek||"—",status:answers.kaek==="Ναι"?"declared":answers.kaek==="Όχι"?"missing":"needs_check"},
-      {name:"Αυτοψία",value:"Δεν έχει γίνει",status:"not_done"},
-      {name:"Φωτογραφίες",value:images>0?`${images} αρχείο/α`:"Καμία",status:images>0?"declared":"not_done"}
-    );
-    if(answers.insulation) facts.push({name:"Μόνωση",value:answers.insulation,status:"needs_check"});
-    if(answers.deviation) facts.push({name:"Αποκλίσεις",value:answers.deviation,status:"needs_check"});
-  }
-  if(pdfs>0) facts.push({name:"PDF τεκμήρια",value:`${pdfs} αρχείο/α`,status:"declared"});
-  if(cads>0) facts.push({name:"CAD (DWG/DXF)",value:`${cads} αρχείο/α — απαιτείται έλεγχος περιεχομένου`,status:"needs_check"});
+function getCurrent(){
+  return cases.find(c=>c.id===currentId)||null;
+}
 
-  const counts={
-    declared:facts.filter(f=>f.status==="declared").length,
-    needs:facts.filter(f=>f.status==="needs_check").length,
-    missing:facts.filter(f=>f.status==="missing").length,
-    notDone:facts.filter(f=>f.status==="not_done").length,
-    total:facts.length
+function statusLabel(s){
+  const m={
+    collection:"Συλλογή στοιχείων",
+    review:"Έλεγχος",
+    inspection:"Αυτοψία",
+    submission:"Υποβολή",
+    done:"Ολοκλήρωση"
   };
-
-  let overall="yellow";
-  if(counts.missing>0) overall="red";
-  else if(counts.needs===0&&counts.notDone===0) overall="green";
-
-  let nba={title:"Πραγματοποίησε αυτοψία και τεκμηρίωσε με φωτογραφίες",reasons:["Δεν έχει επιβεβαιωθεί η πραγματική κατάσταση"]};
-  if(isTopo){
-    if(answers.old_topo==="Όχι"||!answers.old_topo) nba={title:"Ζήτησε τίτλους και παλαιά διαγράμματα",reasons:["Δεν υπάρχει διαθέσιμο τοπογραφικό","Αυξάνεται ο κίνδυνος λάθους στα όρια"]};
-    else if(answers.titles==="Όχι") nba={title:"Ζήτησε τους τίτλους ιδιοκτησίας",reasons:["Απαραίτητοι για τον προσδιορισμό ορίων"]};
-    else nba={title:"Προγραμμάτισε αποτύπωση",reasons:["Υπάρχουν βασικά στοιχεία"]};
-  }else if(answers.plans==="Όχι"){
-    nba={title:"Προγραμμάτισε αυτοψία + συλλογή διαστάσεων",reasons:["Δεν υπάρχει κάτοψη","Υψηλή πιθανότητα επιστροφής φακέλου"]};
-  }else if(answers.permit==="Όχι"){
-    nba={title:"Συγκέντρωσε την οικοδομική άδεια",reasons:["Βασικό δικαιολογητικό"]};
-  }else if(answers.kaek==="Όχι"){
-    nba={title:"Εντόπισε τον ΚΑΕΚ",reasons:["Συνδέει με το Κτηματολόγιο"]};
-  }else if(cads>0){
-    nba={title:"Έλεγξε το περιεχόμενο των CAD αρχείων",reasons:["Τα DWG/DXF χρειάζονται επαλήθευση"]};
-  }else if(old){
-    nba={title:"Αυτοψία με έμφαση σε τοιχοποιία & υγρασία",reasons:[`Κτίριο του ${year} (προ 1980)`]};
-  }
-
-  return {facts,counts,nba,old,year,overall,pdfs,cads,images};
+  return m[s]||"Συλλογή στοιχείων";
 }
 
-function chip(s){
-  const m={declared:{c:T.warn,bg:T.warnBg,t:"ΔΗΛΩΘΗΚΕ"},needs_check:{c:T.warn,bg:T.warnBg,t:"ΠΡΟΣ ΕΛΕΓΧΟ"},missing:{c:T.bad,bg:T.badBg,t:"ΛΕΙΠΕΙ"},not_done:{c:T.bad,bg:T.badBg,t:"ΔΕΝ ΕΧΕΙ ΓΙΝΕΙ"},confirmed:{c:T.ok,bg:T.okBg,t:"ΕΠΙΒΕΒΑΙΩΜΕΝΟ"}};
-  const x=m[s]||m.needs_check;
-  return `<span style="display:inline-flex;align-items:center;gap:5px;padding:3px 7px;background:${x.bg};color:${x.c};font-size:10px;font-weight:700"><span style="width:6px;height:6px;background:${x.c}"></span>${x.t}</span>`;
+function chipStatus(s){
+  const m={
+    collection:{c:T.warn,bg:T.warnBg},
+    review:{c:T.warn,bg:T.warnBg},
+    inspection:{c:T.soft,bg:T.info},
+    submission:{c:T.ok,bg:T.okBg},
+    done:{c:T.ok,bg:T.okBg}
+  };
+  const x=m[s]||m.collection;
+  return `<span style="display:inline-flex;align-items:center;gap:5px;padding:3px 7px;background:${x.bg};color:${x.c};font-size:10px;font-weight:700">${statusLabel(s)}</span>`;
 }
 
-function title(title,status){
-  const m={green:{c:T.ok,t:"ΣΩΣΤΗ ΠΟΡΕΙΑ"},red:{c:T.bad,t:"ΕΚΚΡΕΜΟΤΗΤΑ"},neutral:{c:T.muted,t:"ΝΕΑ ΥΠΟΘΕΣΗ"},yellow:{c:T.warn,t:"ΧΡΕΙΑΖΕΤΑΙ ΕΛΕΓΧΟ"}};
-  const s=m[status]||m.yellow;
-  return `<div style="display:grid;grid-template-columns:1fr auto;border-bottom:1px solid ${T.line};background:#FBFAF7"><div style="padding:10px 16px;border-right:1px solid ${T.line}"><div style="font-size:10px;letter-spacing:.07em;text-transform:uppercase;color:${T.muted}">Υπόθεση</div><div style="font-weight:600;font-size:13px;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${title}</div></div><div style="padding:10px 12px"><div style="font-size:10px;letter-spacing:.07em;text-transform:uppercase;color:${T.muted}">Κατάσταση</div><div style="display:flex;align-items:center;gap:5px;margin-top:2px"><span style="width:7px;height:7px;background:${s.c}"></span><span style="font-size:10px;font-weight:700;color:${s.c}">${s.t}</span></div></div></div>`;
+function topbar(title, right){
+  return `<div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid ${T.line};background:#FBFAF7">
+    <div style="font-weight:700;font-size:14px;color:${T.navy}">${title}</div>
+    <div>${right||""}</div>
+  </div>`;
 }
 
 function render(){
   const root=document.getElementById("root");
-  if(screen==="home") root.innerHTML=home();
-  else if(screen==="new") root.innerHTML=newCase();
-  else if(screen==="questions") root.innerHTML=questions();
-  else if(screen==="files") root.innerHTML=filesScreen();
-  else if(screen==="folder") root.innerHTML=folder();
-  else if(screen==="review") root.innerHTML=review();
+  if(screen==="home") root.innerHTML=viewHome();
+  else if(screen==="new") root.innerHTML=viewNew();
+  else if(screen==="case") root.innerHTML=viewCase();
+  else if(screen==="files") root.innerHTML=viewFiles();
+  else if(screen==="folder") root.innerHTML=viewFolder();
   bind();
 }
 
-function home(){
-  return `<div style="background:${T.navy};padding:36px 20px 28px"><div style="font-size:10px;letter-spacing:.07em;text-transform:uppercase;color:#9FB3CC">AI Senior Engineer</div><h1 style="color:#F5F4EF;font-size:22px;font-weight:700;margin-top:8px">Καλώς ήρθες.</h1><p style="color:#C3CEDD;font-size:14px;margin-top:10px;line-height:1.55">Οργάνωσε την υπόθεση.<br>Εντόπισε τα κενά.<br>Δες το επόμενο ασφαλές βήμα.</p></div><div style="flex:1;padding:20px"><button data-go="new" style="width:100%;display:flex;align-items:center;gap:14px;padding:16px;border:1px solid ${T.navy};background:#fff"><div style="width:40px;height:40px;background:${T.navy};color:#fff;display:flex;align-items:center;justify-content:center;font-size:22px">+</div><div style="text-align:left"><div style="font-weight:700;font-size:15px">Νέα υπόθεση</div><div style="font-size:12.5px;color:${T.muted};margin-top:2px">Ξεκίνα με τα βασικά</div></div></button></div>`;
+/* ========== HOME ========== */
+function viewHome(){
+  const list=cases.slice().sort((a,b)=>(b.updatedAt||0)-(a.updatedAt||0));
+  return `
+  <div style="background:${T.navy};padding:28px 20px 22px">
+    <div style="font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:#9FB3CC">AI Senior Engineer</div>
+    <h1 style="color:#F5F4EF;font-size:22px;font-weight:700;margin-top:8px">Υποθέσεις</h1>
+    <p style="color:#C3CEDD;font-size:13.5px;margin-top:8px;line-height:1.5">Οργάνωσε. Εντόπισε κενά. Προχώρα στο επόμενο ασφαλές βήμα.</p>
+  </div>
+  <div style="flex:1;padding:16px 20px;overflow:auto">
+    <button data-go="new" style="width:100%;display:flex;align-items:center;gap:12px;padding:14px 16px;border:1px solid ${T.navy};background:#fff;margin-bottom:18px">
+      <div style="width:36px;height:36px;background:${T.navy};color:#fff;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700">+</div>
+      <div style="text-align:left">
+        <div style="font-weight:700;font-size:14.5px">Νέα υπόθεση</div>
+        <div style="font-size:12px;color:${T.muted};margin-top:2px">Πελάτης · Διεύθυνση · Τύπος εργασίας</div>
+      </div>
+    </button>
+
+    <div style="font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:${T.muted};margin-bottom:10px">Αποθηκευμένες</div>
+    ${list.length===0
+      ? `<div style="padding:16px;border:1px dashed ${T.line};background:#FBFAF7;font-size:13px;color:${T.muted}">Δεν υπάρχουν ακόμα υποθέσεις.</div>`
+      : list.map(c=>`
+        <button data-open="${c.id}" style="width:100%;text-align:left;padding:14px;border:1px solid ${T.line};background:#fff;margin-bottom:8px">
+          <div style="display:flex;justify-content:space-between;gap:10px;align-items:flex-start">
+            <div style="min-width:0">
+              <div style="font-weight:700;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${c.customer||"Χωρίς όνομα"}</div>
+              <div style="font-size:12.5px;color:${T.muted};margin-top:3px">${c.workType||"—"} · ${c.address||"—"}</div>
+            </div>
+            ${chipStatus(c.lifecycle||"collection")}
+          </div>
+        </button>
+      `).join("")
+    }
+  </div>`;
 }
 
-function newCase(){
-  const types=["ΠΕΑ","Τοπογραφικό","Αυθαίρετο","Νέα Άδεια","Αυτοψία"];
-  const ok=caseData.customer.trim()&&caseData.address.trim()&&caseData.workType;
-  return `${title("— νέος φάκελος —","neutral")}<div style="flex:1;padding:20px;overflow:auto"><button data-go="home" style="color:${T.muted};font-size:13px;font-weight:600;margin-bottom:8px">← Πίσω</button><h2 style="font-size:18px;font-weight:700;margin-top:6px">Νέα τεχνική εργασία</h2><p style="font-size:13px;color:${T.muted};margin:6px 0 16px">Ό,τι καταχωρείται θεωρείται δήλωση μέχρι να τεκμηριωθεί.</p><div style="margin-bottom:12px"><div style="font-size:10px;letter-spacing:.07em;text-transform:uppercase;color:${T.muted}">Πελάτης</div><input id="customer" value="${caseData.customer}" placeholder="Ονοματεπώνυμο" style="width:100%;margin-top:6px;padding:12px;border:1px solid ${T.line};background:#fff;font-size:14px"></div><div style="margin-bottom:12px"><div style="font-size:10px;letter-spacing:.07em;text-transform:uppercase;color:${T.muted}">Διεύθυνση</div><input id="address" value="${caseData.address}" placeholder="Οδός, αριθμός, περιοχή" style="width:100%;margin-top:6px;padding:12px;border:1px solid ${T.line};background:#fff;font-size:14px"></div><div style="font-size:10px;letter-spacing:.07em;text-transform:uppercase;color:${T.muted}">Τύπος εργασίας</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px">${types.map(t=>`<button data-type="${t}" style="padding:12px 8px;border:1px solid ${caseData.workType===t?T.navy:T.line};background:${caseData.workType===t?T.navy:"#fff"};color:${caseData.workType===t?"#fff":T.ink};font-weight:600;font-size:13px">${t}</button>`).join("")}</div></div><div style="padding:16px;border-top:1px solid ${T.line};background:#FBFAF7"><button data-go="questions" ${ok?"":"disabled"} style="width:100%;padding:14px;background:${ok?T.navy:"#C9C4B6"};color:#fff;font-weight:600">Συνέχεια →</button></div>`;
+/* ========== NEW CASE ========== */
+function viewNew(){
+  const ok=draft.customer.trim()&&draft.address.trim()&&draft.workType;
+  return `
+  ${topbar("Νέα υπόθεση")}
+  <div style="flex:1;padding:16px 20px;overflow:auto">
+    <button data-go="home" style="color:${T.muted};font-size:13px;font-weight:600;margin-bottom:12px">← Πίσω</button>
+    <p style="font-size:13px;color:${T.muted};margin-bottom:16px">Ό,τι καταχωρείται θεωρείται δήλωση μέχρι να τεκμηριωθεί.</p>
+
+    <div style="margin-bottom:12px">
+      <div style="font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:${T.muted}">Πελάτης *</div>
+      <input id="customer" value="${draft.customer}" placeholder="Ονοματεπώνυμο" style="width:100%;margin-top:6px;padding:12px;border:1px solid ${T.line};background:#fff;font-size:14px"/>
+    </div>
+    <div style="margin-bottom:12px">
+      <div style="font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:${T.muted}">Τηλέφωνο</div>
+      <input id="phone" value="${draft.phone}" placeholder="Προαιρετικό" style="width:100%;margin-top:6px;padding:12px;border:1px solid ${T.line};background:#fff;font-size:14px"/>
+    </div>
+    <div style="margin-bottom:12px">
+      <div style="font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:${T.muted}">Διεύθυνση *</div>
+      <input id="address" value="${draft.address}" placeholder="Οδός, αριθμός, περιοχή" style="width:100%;margin-top:6px;padding:12px;border:1px solid ${T.line};background:#fff;font-size:14px"/>
+    </div>
+    <div style="margin-bottom:8px">
+      <div style="font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:${T.muted}">Τύπος εργασίας *</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px">
+        ${WORK_TYPES.map(t=>`
+          <button data-type="${t}" style="padding:11px 8px;border:1px solid ${draft.workType===t?T.navy:T.line};background:${draft.workType===t?T.navy:"#fff"};color:${draft.workType===t?"#fff":T.ink};font-weight:600;font-size:12.5px;text-align:center">${t}</button>
+        `).join("")}
+      </div>
+    </div>
+  </div>
+  <div style="padding:14px 16px;border-top:1px solid ${T.line};background:#FBFAF7">
+    <button data-create ${ok?"":"disabled"} style="width:100%;padding:14px;background:${ok?T.navy:"#C9C4B6"};color:#fff;font-weight:600">Αποθήκευση & συνέχεια →</button>
+  </div>`;
 }
 
-function questions(){
-  const qs=getQs();
-  const q=qs[qIndex];
-  const val=(answers[q.id]||"").trim();
-  const yearError=q.id==="year"&&val&&!isYearValid(val);
-  const canNext=q.type==="text" ? (q.id==="year" ? isYearValid(val) : !!val) : !!val;
+/* ========== CASE OVERVIEW ========== */
+function viewCase(){
+  const c=getCurrent();
+  if(!c) return viewHome();
+  const docs=c.documents||[];
+  return `
+  ${topbar(c.customer||"Υπόθεση", chipStatus(c.lifecycle||"collection"))}
+  <div style="flex:1;padding:16px 20px;overflow:auto">
+    <button data-go="home" style="color:${T.muted};font-size:13px;font-weight:600;margin-bottom:12px">← Υποθέσεις</button>
 
-  return `${title(caseData.workType+" — "+caseData.address,"yellow")}<div style="flex:1;padding:20px;overflow:auto"><button data-back style="color:${T.muted};font-size:13px;font-weight:600;margin-bottom:8px">← Πίσω</button><div style="display:flex;gap:3px;margin:12px 0 16px">${qs.map((_,i)=>`<div style="flex:1;height:3px;background:${i<=qIndex?T.navy:T.line}"></div>`).join("")}</div><div style="font-size:10px;letter-spacing:.07em;text-transform:uppercase;color:${T.muted}">Ερώτηση ${qIndex+1}/${qs.length}</div><h2 style="font-size:17px;font-weight:700;margin-top:8px;line-height:1.35">${q.text}</h2><div style="margin-top:12px;padding:10px 12px;background:#EFEDE4;border-left:2px solid ${T.soft};font-size:12.5px;color:#454540;line-height:1.5">${q.why}</div><div style="margin-top:20px">${q.type==="text"?`<input id="ans" value="${answers[q.id]||""}" placeholder="${q.ph}" style="width:100%;padding:12px;border:1px solid ${yearError?T.bad:T.line};background:#fff;font-size:15px">${yearError?`<p style="font-size:12px;color:${T.bad};margin-top:6px">Βάλε έγκυρο έτος (π.χ. 1972)</p>`:""}`:`<div style="display:flex;flex-direction:column;gap:8px">${q.opts.map(o=>`<button data-opt="${o}" style="padding:13px 16px;border:1px solid ${val===o?T.navy:T.line};background:${val===o?T.navy:"#fff"};color:${val===o?"#fff":T.ink};font-weight:600;text-align:left">${o}${val===o?" ✓":""}</button>`).join("")}</div>`}</div></div><div style="padding:16px;border-top:1px solid ${T.line};background:#FBFAF7"><button data-next ${canNext?"":"disabled"} style="width:100%;padding:14px;background:${canNext?T.navy:"#C9C4B6"};color:#fff;font-weight:600">${qIndex<qs.length-1?"Επόμενο →":"Αρχεία →"}</button></div>`;
+    <div style="padding:14px;border:1px solid ${T.line};background:#fff;margin-bottom:12px">
+      <div style="font-size:12px;color:${T.muted}">Τύπος</div>
+      <div style="font-weight:700;font-size:15px;margin-top:2px">${c.workType||"—"}</div>
+      <div style="font-size:12px;color:${T.muted};margin-top:10px">Διεύθυνση</div>
+      <div style="font-size:14px;margin-top:2px">${c.address||"—"}</div>
+      ${c.phone?`<div style="font-size:12px;color:${T.muted};margin-top:10px">Τηλέφωνο</div><div style="font-size:14px;margin-top:2px">${c.phone}</div>`:""}
+    </div>
+
+    <div style="padding:14px;border:1px solid ${T.navy};background:${T.info};margin-bottom:14px">
+      <div style="font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:${T.navy};margin-bottom:6px">Επόμενο ασφαλές βήμα</div>
+      <div style="font-weight:700;font-size:14.5px;line-height:1.35">${nextAction(c)}</div>
+      <div style="font-size:12.5px;color:#3A4555;margin-top:6px">${nextWhy(c)}</div>
+    </div>
+
+    <button data-go="files" style="width:100%;padding:14px;border:1px solid ${T.line};background:#fff;margin-bottom:8px;text-align:left">
+      <div style="font-weight:700;font-size:14px">Έγγραφα / Technical Folder</div>
+      <div style="font-size:12.5px;color:${T.muted};margin-top:3px">${docs.length} αρχείο/α · συγκέντρωση στοιχείων πριν την αυτοψία</div>
+    </button>
+
+    <button data-go="folder" style="width:100%;padding:14px;border:1px solid ${T.line};background:#fff;margin-bottom:8px;text-align:left">
+      <div style="font-weight:700;font-size:14px">Κατάσταση φακέλου</div>
+      <div style="font-size:12.5px;color:${T.muted};margin-top:3px">Τι έχουμε · τι λείπει · τι θέλει έλεγχο</div>
+    </button>
+
+    <div style="margin-top:16px;padding:12px;background:#EFEDE4;font-size:12.5px;color:#454540;line-height:1.5">
+      Τα έγγραφα λειτουργούν ως τεχνικός φάκελος εργασίας. Δεν αναλύονται αυτόματα. Σκοπός: να φτάσεις στην αυτοψία πιο προετοιμασμένος.
+    </div>
+  </div>
+  <div style="padding:14px 16px;border-top:1px solid ${T.line};background:#FBFAF7;display:flex;gap:8px">
+    <button data-delete style="padding:12px 14px;border:1px solid ${T.line};color:${T.bad};font-weight:600">Διαγραφή</button>
+    <button data-go="home" style="flex:1;padding:12px;background:${T.navy};color:#fff;font-weight:600">Λίστα</button>
+  </div>`;
 }
 
-function filesScreen(){
-  const d=build();
-  return `${title(caseData.workType+" — "+caseData.address,d.overall)}<div style="flex:1;padding:20px;overflow:auto"><button data-go="questions" style="color:${T.muted};font-size:13px;font-weight:600;margin-bottom:8px">← Πίσω</button><h2 style="font-size:18px;font-weight:700;margin-top:6px">Αρχεία</h2><p style="font-size:13px;color:${T.muted};margin:4px 0 14px">PDF, CAD (DWG/DXF), φωτογραφίες. Τα CAD χρειάζονται έλεγχο περιεχομένου.</p><div style="border:1px dashed ${T.line};padding:16px;background:#fff;text-align:center;margin-bottom:14px"><input type="file" id="fileInput" multiple accept=".pdf,.dwg,.dxf,.jpg,.jpeg,.png"><p style="font-size:12px;color:${T.muted};margin-top:8px">PDF · DWG/DXF · JPG/PNG</p></div><div style="display:flex;gap:8px;margin-bottom:14px"><div style="flex:1;padding:10px;border:1px solid ${T.line};background:#FBFAF7;text-align:center;font-size:12px"><b>${d.pdfs}</b><br>PDF</div><div style="flex:1;padding:10px;border:1px solid ${T.line};background:#FBFAF7;text-align:center;font-size:12px"><b>${d.cads}</b><br>CAD</div><div style="flex:1;padding:10px;border:1px solid ${T.line};background:#FBFAF7;text-align:center;font-size:12px"><b>${d.images}</b><br>Εικόνες</div></div>${files.length===0?`<div style="padding:12px;background:${T.warnBg};font-size:13px">Δεν έχει προστεθεί αρχείο.</div>`:files.map((f,i)=>`<div style="display:flex;justify-content:space-between;padding:12px;border:1px solid ${T.line};background:#fff;margin-bottom:6px"><div><div style="font-weight:600;font-size:13px">${f.name}</div><div style="font-size:11px;color:${T.muted}">${Math.round(f.size/1024)} KB</div></div><button data-remove="${i}" style="color:${T.muted}">×</button></div>`).join("")}${d.cads>0?`<div style="margin-top:12px;padding:12px;background:${T.warnBg};font-size:12.5px"><b>CAD:</b> Απαιτείται έλεγχος περιεχομένου πριν θεωρηθούν επαρκή.</div>`:""}</div><div style="padding:16px;border-top:1px solid ${T.line};background:#FBFAF7"><button data-go="folder" style="width:100%;padding:14px;background:${T.navy};color:#fff;font-weight:600">Τεχνικός φάκελος →</button></div>`;
+/* ========== FILES ========== */
+function viewFiles(){
+  const c=getCurrent();
+  if(!c) return viewHome();
+  const docs=c.documents||[];
+  const pdfs=docs.filter(d=>/\.pdf$/i.test(d.name)).length;
+  const cads=docs.filter(d=>/\.(dwg|dxf)$/i.test(d.name)).length;
+  const imgs=docs.filter(d=>/\.(jpe?g|png)$/i.test(d.name)).length;
+
+  return `
+  ${topbar("Έγγραφα", chipStatus(c.lifecycle||"collection"))}
+  <div style="flex:1;padding:16px 20px;overflow:auto">
+    <button data-go="case" style="color:${T.muted};font-size:13px;font-weight:600;margin-bottom:12px">← Υπόθεση</button>
+    <h2 style="font-size:18px;font-weight:700">Technical Folder</h2>
+    <p style="font-size:13px;color:${T.muted};margin:6px 0 14px">Συγκέντρωσε ό,τι υπάρχει ήδη (σχέδια, μελέτες, τοπογραφικό, άδειες). Βοηθά πριν την αυτοψία.</p>
+
+    <div style="border:1px dashed ${T.line};padding:16px;background:#fff;text-align:center;margin-bottom:14px">
+      <input type="file" id="fileInput" multiple accept=".pdf,.dwg,.dxf,.jpg,.jpeg,.png"/>
+      <p style="font-size:12px;color:${T.muted};margin-top:8px">PDF · DWG/DXF · JPG/PNG</p>
+    </div>
+
+    <div style="display:flex;gap:8px;margin-bottom:14px">
+      <div style="flex:1;padding:10px;border:1px solid ${T.line};background:#FBFAF7;text-align:center;font-size:12px"><b>${pdfs}</b><br>PDF</div>
+      <div style="flex:1;padding:10px;border:1px solid ${T.line};background:#FBFAF7;text-align:center;font-size:12px"><b>${cads}</b><br>CAD</div>
+      <div style="flex:1;padding:10px;border:1px solid ${T.line};background:#FBFAF7;text-align:center;font-size:12px"><b>${imgs}</b><br>Εικόνες</div>
+    </div>
+
+    ${docs.length===0
+      ? `<div style="padding:12px;background:${T.warnBg};font-size:13px">Δεν έχουν προστεθεί αρχεία ακόμα.</div>`
+      : docs.map((d,i)=>`
+        <div style="display:flex;justify-content:space-between;padding:12px;border:1px solid ${T.line};background:#fff;margin-bottom:6px">
+          <div style="min-width:0">
+            <div style="font-weight:600;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${d.name}</div>
+            <div style="font-size:11px;color:${T.muted}">${d.kb} KB · ${d.kind}</div>
+          </div>
+          <button data-remove="${i}" style="color:${T.muted};padding:0 6px">×</button>
+        </div>
+      `).join("")
+    }
+
+    ${cads>0?`<div style="margin-top:12px;padding:12px;background:${T.warnBg};font-size:12.5px"><b>CAD:</b> Καταχωρήθηκαν στον φάκελο. Απαιτείται ανθρώπινος έλεγχος περιεχομένου.</div>`:""}
+  </div>
+  <div style="padding:14px 16px;border-top:1px solid ${T.line};background:#FBFAF7">
+    <button data-go="folder" style="width:100%;padding:14px;background:${T.navy};color:#fff;font-weight:600">Κατάσταση φακέλου →</button>
+  </div>`;
 }
 
-function folder(){
-  const d=build();
-  return `${title(caseData.workType+" — "+caseData.address,d.overall)}<div style="flex:1;padding:20px;overflow:auto"><button data-go="files" style="color:${T.muted};font-size:13px;font-weight:600;margin-bottom:8px">← Πίσω</button><h2 style="font-size:18px;font-weight:700;margin-top:6px">Τεχνικός φάκελος</h2><p style="font-size:13px;color:${T.muted};margin:4px 0 14px">Τι έχουμε, τι λείπει, τι θέλει έλεγχο.</p><div style="padding:14px;border:1px solid ${T.line};background:#FBFAF7;margin-bottom:14px"><div style="display:grid;grid-template-columns:1fr auto;gap:4px 12px;font-size:13.5px"><span>Δηλωμένα</span><strong>${d.counts.declared}/${d.counts.total}</strong><span>Προς έλεγχο</span><strong>${d.counts.needs}/${d.counts.total}</strong><span>Λείπουν</span><strong style="color:${T.bad}">${d.counts.missing}/${d.counts.total}</strong><span>Δεν έχουν γίνει</span><strong style="color:${T.bad}">${d.counts.notDone}/${d.counts.total}</strong></div></div>${d.facts.map(f=>`<div style="padding:12px;border:1px solid ${T.line};background:#fff;margin-bottom:6px;display:flex;justify-content:space-between;gap:10px"><div><div style="font-weight:700;font-size:13.5px">${f.name}</div><div style="font-size:13px;margin-top:2px">${f.value}</div></div>${chip(f.status)}</div>`).join("")}</div><div style="padding:16px;border-top:1px solid ${T.line};background:#FBFAF7"><button data-go="review" style="width:100%;padding:14px;background:${T.navy};color:#fff;font-weight:600">Senior Review →</button></div>`;
+/* ========== FOLDER STATUS ========== */
+function viewFolder(){
+  const c=getCurrent();
+  if(!c) return viewHome();
+  const docs=c.documents||[];
+  const hasAny=docs.length>0;
+  const hasCad=docs.some(d=>d.kind==="CAD");
+  const hasPdf=docs.some(d=>d.kind==="PDF");
+
+  const items=[
+    {name:"Στοιχεία πελάτη",value:c.customer||"—",status:"declared",hint:"Δηλώθηκε κατά τη δημιουργία"},
+    {name:"Διεύθυνση ακινήτου",value:c.address||"—",status:"declared",hint:"Δηλώθηκε κατά τη δημιουργία"},
+    {name:"Τύπος εργασίας",value:c.workType||"—",status:"declared",hint:"Καθορίζει τη διαδικασία"},
+    {name:"Έγγραφα στον φάκελο",value:hasAny?`${docs.length} αρχείο/α`:"Κανένα",status:hasAny?"declared":"missing",hint:hasAny?"Υπάρχει υλικό για προετοιμασία":"Στοιχείο που λείπει από τον φάκελο"},
+    {name:"CAD σχέδια",value:hasCad?"Υπάρχουν — προς έλεγχο":"Δεν υπάρχουν",status:hasCad?"needs_check":"missing",hint:hasCad?"Απαιτείται ανθρώπινος έλεγχος":"Μπορεί να ζητηθούν από ιδιοκτήτη/μηχανικό"},
+    {name:"PDF τεκμήρια",value:hasPdf?"Υπάρχουν":"Δεν υπάρχουν",status:hasPdf?"declared":"needs_check",hint:hasPdf?"Στον φάκελο εργασίας":"Π.χ. άδεια, μελέτες, παλιά σχέδια"},
+    {name:"Αυτοψία",value:"Δεν έχει γίνει",status:"not_done",hint:"Διαδικασία που δεν έχει γίνει ακόμα"}
+  ];
+
+  const counts={
+    declared:items.filter(i=>i.status==="declared").length,
+    needs:items.filter(i=>i.status==="needs_check").length,
+    missing:items.filter(i=>i.status==="missing").length,
+    notDone:items.filter(i=>i.status==="not_done").length,
+    total:items.length
+  };
+
+  function chip(s){
+    const m={declared:{c:T.warn,bg:T.warnBg,t:"ΔΗΛΩΘΗΚΕ"},needs_check:{c:T.warn,bg:T.warnBg,t:"ΠΡΟΣ ΕΛΕΓΧΟ"},missing:{c:T.bad,bg:T.badBg,t:"ΛΕΙΠΕΙ"},not_done:{c:T.bad,bg:T.badBg,t:"ΔΕΝ ΕΧΕΙ ΓΙΝΕΙ"}};
+    const x=m[s]||m.needs_check;
+    return `<span style="display:inline-flex;align-items:center;gap:5px;padding:3px 7px;background:${x.bg};color:${x.c};font-size:10px;font-weight:700"><span style="width:6px;height:6px;background:${x.c}"></span>${x.t}</span>`;
+  }
+
+  return `
+  ${topbar("Κατάσταση φακέλου", chipStatus(c.lifecycle||"collection"))}
+  <div style="flex:1;padding:16px 20px;overflow:auto">
+    <button data-go="case" style="color:${T.muted};font-size:13px;font-weight:600;margin-bottom:12px">← Υπόθεση</button>
+    <p style="font-size:13px;color:${T.muted};margin-bottom:14px">Τι έχουμε, τι λείπει, τι θέλει έλεγχο. Δεν αποτελεί ένδειξη τελικής ορθότητας.</p>
+
+    <div style="padding:14px;border:1px solid ${T.line};background:#FBFAF7;margin-bottom:14px">
+      <div style="display:grid;grid-template-columns:1fr auto;gap:4px 12px;font-size:13.5px">
+        <span>Δηλωμένα</span><strong>${counts.declared}/${counts.total}</strong>
+        <span>Προς έλεγχο</span><strong>${counts.needs}/${counts.total}</strong>
+        <span>Λείπουν</span><strong style="color:${T.bad}">${counts.missing}/${counts.total}</strong>
+        <span>Δεν έχουν γίνει</span><strong style="color:${T.bad}">${counts.notDone}/${counts.total}</strong>
+      </div>
+    </div>
+
+    ${items.map(it=>`
+      <div style="padding:12px;border:1px solid ${T.line};background:#fff;margin-bottom:6px">
+        <div style="display:flex;justify-content:space-between;gap:10px">
+          <div>
+            <div style="font-weight:700;font-size:13.5px">${it.name}</div>
+            <div style="font-size:13px;margin-top:2px">${it.value}</div>
+            <div style="font-size:11px;color:${T.muted};margin-top:3px">${it.hint}</div>
+          </div>
+          ${chip(it.status)}
+        </div>
+      </div>
+    `).join("")}
+
+    <div style="margin-top:14px;padding:14px;border:1px solid ${T.navy};background:${T.info}">
+      <div style="font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:${T.navy};margin-bottom:6px">Επόμενο ασφαλές βήμα</div>
+      <div style="font-weight:700;font-size:14.5px">${nextAction(c)}</div>
+      <div style="font-size:12.5px;color:#3A4555;margin-top:6px">${nextWhy(c)}</div>
+    </div>
+  </div>
+  <div style="padding:14px 16px;border-top:1px solid ${T.line};background:#FBFAF7">
+    <button data-go="case" style="width:100%;padding:14px;background:${T.navy};color:#fff;font-weight:600">Επιστροφή στην υπόθεση</button>
+  </div>`;
 }
 
-function review(){
-  const d=build();
-  return `${title(caseData.workType+" — "+caseData.address,d.overall)}<div style="flex:1;padding:20px;overflow:auto"><button data-go="folder" style="color:${T.muted};font-size:13px;font-weight:600;margin-bottom:8px">← Πίσω</button><h2 style="font-size:18px;font-weight:700;margin-top:6px">Senior Review</h2><p style="font-size:13px;color:${T.muted};margin:4px 0 14px">Στόχος: να μην ξεχάσεις κάτι κρίσιμο πριν καταθέσεις τον φάκελο.</p><div style="padding:16px;border:1px solid ${T.navy};background:${T.info};margin-bottom:14px"><div style="font-size:10px;letter-spacing:.07em;text-transform:uppercase;color:${T.navy};margin-bottom:8px">Επόμενο κρίσιμο βήμα</div><div style="font-size:15px;font-weight:700;line-height:1.35;margin-bottom:8px">${d.nba.title}</div><ul style="padding-left:18px;margin:0;font-size:13px;color:#3A4555">${d.nba.reasons.map(r=>`<li style="margin-bottom:4px">${r}</li>`).join("")}</ul></div><div style="padding:14px;border:1px solid ${T.line};background:#FBFAF7;margin-bottom:14px"><div style="display:grid;grid-template-columns:1fr auto;gap:4px 12px;font-size:13.5px"><span>Δηλωμένα</span><strong>${d.counts.declared}/${d.counts.total}</strong><span>Προς έλεγχο</span><strong>${d.counts.needs}/${d.counts.total}</strong><span>Λείπουν</span><strong style="color:${T.bad}">${d.counts.missing}/${d.counts.total}</strong><span>Δεν έχουν γίνει</span><strong style="color:${T.bad}">${d.counts.notDone}/${d.counts.total}</strong></div></div>${d.old?`<div style="padding:12px;background:${T.warnBg};margin-bottom:14px;font-size:12.5px"><b>Προσοχή:</b> Κτίριο του ${d.year}. Έλεγχος τοιχοποιίας & υγρασίας.</div>`:""}<div style="padding:14px;border:1px solid ${T.navy};background:${T.info};font-size:13.5px;font-style:italic;line-height:1.5">«Αυτά γνωρίζουμε. Αυτά δεν γνωρίζουμε. Αυτά χρειάζονται απόδειξη. Αυτό είναι το επόμενο ασφαλές βήμα.»</div></div><div style="padding:16px;border-top:1px solid ${T.line};background:#FBFAF7;display:flex;gap:8px"><button data-restart style="padding:14px 18px;border:1px solid ${T.line};color:${T.muted}">↺ Νέα</button><button data-go="home" style="flex:1;padding:14px;background:${T.navy};color:#fff;font-weight:600">Home</button></div>`;
+/* ========== LOGIC ========== */
+function nextAction(c){
+  const docs=c.documents||[];
+  if(docs.length===0) return "Συγκέντρωσε διαθέσιμα έγγραφα από πελάτη / μηχανικό";
+  if(docs.some(d=>d.kind==="CAD")) return "Έλεγξε το περιεχόμενο των CAD αρχείων";
+  if((c.lifecycle||"collection")==="collection") return "Ολοκλήρωσε τον φάκελο και προγραμμάτισε αυτοψία";
+  return "Προχώρα στο επόμενο στάδιο της διαδικασίας";
+}
+function nextWhy(c){
+  const docs=c.documents||[];
+  if(docs.length===0) return "Χωρίς υλικό στον φάκελο η αυτοψία γίνεται λιγότερο στοχευμένη.";
+  if(docs.some(d=>d.kind==="CAD")) return "Τα CAD έχουν καταχωρηθεί, αλλά απαιτούν ανθρώπινο έλεγχο πριν θεωρηθούν επαρκή.";
+  return "Υπάρχει βάση υλικού. Το επόμενο κρίσιμο βήμα είναι επιβεβαίωση στην πράξη.";
+}
+
+function fileKind(name){
+  if(/\.pdf$/i.test(name)) return "PDF";
+  if(/\.(dwg|dxf)$/i.test(name)) return "CAD";
+  if(/\.(jpe?g|png)$/i.test(name)) return "Εικόνα";
+  return "Άλλο";
 }
 
 function bind(){
-  document.querySelectorAll("[data-go]").forEach(b=>b.onclick=()=>{if(b.dataset.go==="questions")qIndex=0;screen=b.dataset.go;render()});
-  document.querySelectorAll("[data-type]").forEach(b=>b.onclick=()=>{caseData.workType=b.dataset.type;render()});
-  const c=document.getElementById("customer");if(c)c.oninput=e=>caseData.customer=e.target.value;
-  const a=document.getElementById("address");if(a)a.oninput=e=>caseData.address=e.target.value;
+  document.querySelectorAll("[data-go]").forEach(b=>b.onclick=()=>{screen=b.dataset.go;render()});
+  document.querySelectorAll("[data-type]").forEach(b=>b.onclick=()=>{draft.workType=b.dataset.type;render()});
+  document.querySelectorAll("[data-open]").forEach(b=>b.onclick=()=>{currentId=b.dataset.open;screen="case";render()});
 
-  // FIX: για το έτος (και γενικά text) κάνουμε render σε κάθε αλλαγή
-  const ans=document.getElementById("ans");
-  if(ans){
-    ans.oninput=e=>{
-      const qs=getQs();
-      answers[qs[qIndex].id]=e.target.value;
-      render(); // ← αυτό διορθώνει το "κολλάει"
+  const cust=document.getElementById("customer"); if(cust) cust.oninput=e=>draft.customer=e.target.value;
+  const phone=document.getElementById("phone"); if(phone) phone.oninput=e=>draft.phone=e.target.value;
+  const addr=document.getElementById("address"); if(addr) addr.oninput=e=>draft.address=e.target.value;
+
+  // live enable create button
+  const createBtn=document.querySelector("[data-create]");
+  if(createBtn){
+    const refresh=()=>{
+      const ok=draft.customer.trim()&&draft.address.trim()&&draft.workType;
+      createBtn.disabled=!ok;
+      createBtn.style.background=ok?T.navy:"#C9C4B6";
+    };
+    if(cust) cust.oninput=e=>{draft.customer=e.target.value;refresh()};
+    if(phone) phone.oninput=e=>{draft.phone=e.target.value};
+    if(addr) addr.oninput=e=>{draft.address=e.target.value;refresh()};
+    createBtn.onclick=()=>{
+      if(!(draft.customer.trim()&&draft.address.trim()&&draft.workType)) return;
+      const id=uid();
+      const now=Date.now();
+      cases.push({
+        id,
+        customer:draft.customer.trim(),
+        phone:draft.phone.trim(),
+        address:draft.address.trim(),
+        workType:draft.workType,
+        lifecycle:"collection",
+        documents:[],
+        createdAt:now,
+        updatedAt:now
+      });
+      save();
+      draft={customer:"",phone:"",address:"",workType:""};
+      currentId=id;
+      screen="case";
+      render();
     };
   }
 
-  document.querySelectorAll("[data-opt]").forEach(b=>b.onclick=()=>{answers[getQs()[qIndex].id]=b.dataset.opt;render()});
-  const next=document.querySelector("[data-next]");if(next)next.onclick=()=>{const qs=getQs();if(qIndex<qs.length-1){qIndex++;render()}else{screen="files";render()}};
-  const back=document.querySelector("[data-back]");if(back)back.onclick=()=>{if(qIndex>0){qIndex--;render()}else{screen="new";render()}};
-  const fi=document.getElementById("fileInput");if(fi)fi.onchange=e=>{files=[...files,...Array.from(e.target.files||[])];render()};
-  document.querySelectorAll("[data-remove]").forEach(b=>b.onclick=()=>{files.splice(+b.dataset.remove,1);render()});
-  const r=document.querySelector("[data-restart]");if(r)r.onclick=()=>{screen="home";caseData={customer:"",address:"",workType:""};answers={};files=[];qIndex=0;render()};
+  const fi=document.getElementById("fileInput");
+  if(fi){
+    fi.onchange=e=>{
+      const c=getCurrent();
+      if(!c) return;
+      const list=Array.from(e.target.files||[]);
+      list.forEach(f=>{
+        c.documents.push({
+          name:f.name,
+          kb:Math.max(1,Math.round(f.size/1024)),
+          kind:fileKind(f.name)
+        });
+      });
+      c.updatedAt=Date.now();
+      save();
+      render();
+    };
+  }
+
+  document.querySelectorAll("[data-remove]").forEach(b=>b.onclick=()=>{
+    const c=getCurrent();
+    if(!c) return;
+    c.documents.splice(+b.dataset.remove,1);
+    c.updatedAt=Date.now();
+    save();
+    render();
+  });
+
+  const del=document.querySelector("[data-delete]");
+  if(del) del.onclick=()=>{
+    if(!confirm("Διαγραφή αυτής της υπόθεσης;")) return;
+    cases=cases.filter(c=>c.id!==currentId);
+    save();
+    currentId=null;
+    screen="home";
+    render();
+  };
 }
+
+load();
 render();
 })();
 </script>
