@@ -11,6 +11,7 @@
   --navy:#1D3557;--soft:#2A466E;
   --ok:#3A6B4C;--okBg:#E7EFE8;--warn:#A8791F;--warnBg:#F5EEDC;
   --bad:#A8412F;--badBg:#F5E4DF;--info:#EEF1F5;
+  --conflict:#4A3B6B;--conflictBg:#EDE8F5;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:#e5e3db;color:var(--ink);min-height:100dvh;display:flex;justify-content:center}
@@ -24,11 +25,11 @@ input,select,textarea{width:100%;padding:12px;border:1px solid var(--line);backg
 .brand small{display:block;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:700}
 .scroll{flex:1;overflow:auto;padding:16px 18px}
 .foot{padding:14px 16px;border-top:1px solid var(--line);background:#FBFAF7}
-.btn{width:100%;padding:14px;background:var(--navy);color:#fff;font-weight:700;border-radius:2px}
+.btn{width:100%;padding:14px;background:var(--navy);color:#fff;font-weight:700}
 .btn.ghost{background:#fff;color:var(--muted);border:1px solid var(--line)}
 .btn.danger{background:#fff;color:var(--bad);border:1px solid var(--line)}
 .card{border:1px solid var(--line);background:#fff;padding:14px;margin-bottom:10px}
-.chip{display:inline-flex;align-items:center;gap:5px;padding:3px 8px;font-size:10px;font-weight:700}
+.chip{display:inline-flex;align-items:center;gap:5px;padding:3px 8px;font-size:10px;font-weight:700;white-space:nowrap}
 .label{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
 .row{display:flex;gap:8px}
 .muted{color:var(--muted);font-size:13px;line-height:1.45}
@@ -46,144 +47,274 @@ input,select,textarea{width:100%;padding:12px;border:1px solid var(--line);backg
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .stat{flex:1;padding:10px;border:1px solid var(--line);background:#FBFAF7;text-align:center;font-size:12px}
 .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:18px;background:var(--navy);color:#fff;padding:10px 14px;font-size:13px;z-index:50;max-width:90%}
+.progress{display:flex;gap:4px;margin:10px 0 14px;font-size:10px;color:var(--muted);flex-wrap:wrap}
+.progress span{padding:4px 6px;border:1px solid var(--line);background:#fff}
+.progress span.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.quote{padding:12px;background:#EFEDE4;border-left:2px solid var(--soft);font-size:12.5px;color:#454540;line-height:1.5;margin:10px 0}
 </style>
 </head>
 <body>
 <div id="app"></div>
 <script>
 (function(){
-const KEY='ai-senior-sim-v1';
+const KEY='ai-senior-sim-v2';
 const TYPES=['ΠΕΑ','Νέα Άδεια','Άδεια Μικρής Κλίμακας','Τοπογραφικό','Αυθαίρετο','ΗΤΚ'];
 
 const Q={
 'ΠΕΑ':[
-  {id:'year',t:'Ποιο είναι το έτος κατασκευής;',type:'text',ph:'π.χ. 1972',why:'Δήλωση — επιβεβαιώνεται με έγγραφα/αυτοψία.'},
-  {id:'plans',t:'Υπάρχουν διαθέσιμα αρχιτεκτονικά σχέδια;',type:'choice',opts:['Ναι','Όχι','Δεν γνωρίζω'],why:'Χωρίς κάτοψη αυξάνεται ο κίνδυνος λάθους.'},
-  {id:'permit',t:'Υπάρχει οικοδομική άδεια;',type:'choice',opts:['Ναι','Όχι','Δεν γνωρίζω'],why:'Βασικό δικαιολογητικό για υφιστάμενο κτίριο.'},
-  {id:'use',t:'Ποια είναι η χρήση του χώρου;',type:'choice',opts:['Κατοικία','Επαγγελματική','Μικτή','Δεν γνωρίζω'],why:'Επηρεάζει ενεργειακή κατάταξη και απαιτήσεις.'}
+  {id:'year',t:'Ποιο είναι το έτος κατασκευής;',type:'text',ph:'π.χ. 1972',why:'Δήλωση — επιβεβαιώνεται με έγγραφα ή αυτοψία.'},
+  {id:'plans',t:'Υπάρχουν διαθέσιμα αρχιτεκτονικά σχέδια;',type:'choice',opts:['Ναι','Όχι','Δεν γνωρίζω'],why:'Χωρίς κάτοψη αυξάνεται ο κίνδυνος απόκλισης.'},
+  {id:'permit',t:'Υπάρχει οικοδομική άδεια;',type:'choice',opts:['Ναι','Όχι','Δεν γνωρίζω'],why:'Βασικό δικαιολογητικό — DECLARED ≠ VERIFIED.'},
+  {id:'use',t:'Ποια είναι η δηλωμένη χρήση;',type:'choice',opts:['Κατοικία','Επαγγελματική','Μικτή','Δεν γνωρίζω'],why:'Επηρεάζει απαιτήσεις και πιθανές ασυμφωνίες.'},
+  {id:'site',t:'Έχει γίνει αυτοψία;',type:'choice',opts:['Ναι','Όχι','Δεν γνωρίζω'],why:'Η πραγματική κατάσταση επιβεβαιώνεται επιτόπου.'}
 ],
 'Νέα Άδεια':[
-  {id:'stage',t:'Σε ποιο στάδιο βρίσκεται το έργο;',type:'choice',opts:['Αρχική διερεύνηση','Έλεγχος οικοπέδου','Συγκέντρωση στοιχείων','Μελέτες','Υποβολή'],why:'Το στάδιο καθορίζει τι χρειάζεται τώρα.'},
+  {id:'stage',t:'Σε ποιο στάδιο βρίσκεται το έργο;',type:'choice',opts:['Αρχική διερεύνηση','Έλεγχος οικοπέδου','Συγκέντρωση στοιχείων','Μελέτες','Υποβολή'],why:'Το στάδιο καθορίζει τι χρειάζεται τώρα — όχι generic checklist.'},
   {id:'plot',t:'Το ακίνητο είναι οικόπεδο ή αγροτεμάχιο;',type:'choice',opts:['Οικόπεδο','Αγροτεμάχιο','Δεν γνωρίζω'],why:'Επηρεάζει πολεοδομικό καθεστώς.'},
-  {id:'topo',t:'Υπάρχει διαθέσιμο τοπογραφικό;',type:'choice',opts:['Ναι','Όχι','Δεν γνωρίζω'],why:'Συχνά προαπαιτούμενο πριν τις μελέτες.'},
+  {id:'topo',t:'Υπάρχει διαθέσιμο τοπογραφικό;',type:'choice',opts:['Ναι','Όχι','Δεν γνωρίζω'],why:'Συχνά προαπαιτούμενο — ύπαρξη ≠ επαλήθευση.'},
   {id:'titles',t:'Υπάρχουν τίτλοι ιδιοκτησίας;',type:'choice',opts:['Ναι','Όχι','Δεν γνωρίζω'],why:'Απαραίτητοι για ταυτοποίηση ακινήτου.'},
-  {id:'arch',t:'Έχει ανατεθεί αρχιτεκτονική μελέτη;',type:'choice',opts:['Ναι','Όχι','Δεν γνωρίζω'],why:'Καθορίζει την επόμενη ανάθεση/συντονισμό.'}
+  {id:'arch',t:'Έχει ανατεθεί αρχιτεκτονική μελέτη;',type:'choice',opts:['Ναι','Όχι','Δεν γνωρίζω'],why:'Καθορίζει συντονισμό και επόμενο deliverable.'}
 ],
 'Άδεια Μικρής Κλίμακας':[
-  {id:'work',t:'Τι είδους εργασία αφορά;',type:'choice',opts:['Αλλαγή διαρρύθμισης','Θερμομόνωση','Αλλαγή καυστήρα','Σκαλωσιές / χρωματισμοί','Άλλο'],why:'Καθορίζει δικαιολογητικά και εύρος.'},
-  {id:'exist_permit',t:'Υπάρχει παλαιότερη άδεια / νομιμοποίηση;',type:'choice',opts:['Ναι','Όχι','Δεν γνωρίζω'],why:'Ελέγχεται η υφιστάμενη κατάσταση.'},
+  {id:'work',t:'Τι είδους εργασία αφορά;',type:'choice',opts:['Αλλαγή διαρρύθμισης','Θερμομόνωση','Αλλαγή καυστήρα','Σκαλωσιές / χρωματισμοί','Άλλο'],why:'Καθορίζει εύρος και δικαιολογητικά.'},
+  {id:'exist_permit',t:'Υπάρχει παλαιότερη άδεια / νομιμοποίηση;',type:'choice',opts:['Ναι','Όχι','Δεν γνωρίζω'],why:'Ελέγχεται η υφιστάμενη νομιμότητα.'},
   {id:'plans',t:'Υπάρχουν σχέδια υφιστάμενης κατάστασης;',type:'choice',opts:['Ναι','Όχι','Δεν γνωρίζω'],why:'Βοηθούν πριν την αυτοψία.'},
-  {id:'pea',t:'Απαιτείται / υπάρχει ΠΕΑ;',type:'choice',opts:['Ναι','Όχι','Δεν γνωρίζω'],why:'Συχνή σύνδεση με μικρές επεμβάσεις.'}
+  {id:'site',t:'Έχει γίνει αυτοψία;',type:'choice',opts:['Ναι','Όχι','Δεν γνωρίζω'],why:'Σύγκριση σχεδίων με πραγματικότητα.'}
 ],
 'Τοπογραφικό':[
-  {id:'purpose',t:'Για ποιο σκοπό χρειάζεται το τοπογραφικό;',type:'choice',opts:['Συμβόλαιο','Οικοδομική άδεια','Κτηματολόγιο','Τακτοποίηση','Άλλο'],why:'Ο σκοπός καθορίζει τις απαιτήσεις.'},
+  {id:'purpose',t:'Για ποιο σκοπό χρειάζεται;',type:'choice',opts:['Συμβόλαιο','Οικοδομική άδεια','Κτηματολόγιο','Τακτοποίηση','Άλλο'],why:'Ο σκοπός καθορίζει απαιτήσεις.'},
   {id:'old',t:'Υπάρχει παλαιότερο διάγραμμα;',type:'choice',opts:['Ναι','Όχι','Δεν γνωρίζω'],why:'Μπορεί να μειώσει λάθη στα όρια.'},
-  {id:'titles',t:'Υπάρχουν τίτλοι;',type:'choice',opts:['Ναι','Όχι','Δεν γνωρίζω'],why:'Κρίσιμοι για όρια/ιδιοκτησία.'},
+  {id:'titles',t:'Υπάρχουν τίτλοι;',type:'choice',opts:['Ναι','Όχι','Δεν γνωρίζω'],why:'Κρίσιμοι για όρια.'},
   {id:'kaek',t:'Υπάρχει ΚΑΕΚ;',type:'choice',opts:['Ναι','Όχι','Δεν γνωρίζω'],why:'Σύνδεση με Κτηματολόγιο.'}
 ],
+'Αυθαίρετο':[
+  {id:'known',t:'Έχει εντοπιστεί απόκλιση από εγκεκριμένα;',type:'choice',opts:['Ναι','Όχι','Δεν γνωρίζω'],why:'Αφετηρία ελέγχου — όχι αυτόματη τακτοποίηση.'},
+  {id:'photos',t:'Υπάρχουν φωτογραφίες υφιστάμενης κατάστασης;',type:'choice',opts:['Ναι','Όχι','Δεν γνωρίζω'],why:'Evidence για σύγκριση.'},
+  {id:'plans',t:'Υπάρχουν παλαιά σχέδια / άδεια;',type:'choice',opts:['Ναι','Όχι','Δεν γνωρίζω'],why:'Βάση σύγκρισης.'},
+  {id:'year',t:'Γνωστό έτος / περίοδος κατασκευής απόκλισης;',type:'text',ph:'π.χ. 1995 ή άγνωστο',why:'Επηρεάζει νομικό πλαίσιο — προς επαλήθευση.'}
+],
+'ΗΤΚ':[
+  {id:'permit',t:'Υπάρχει οικοδομική άδεια στο φάκελο;',type:'choice',opts:['Ναι','Όχι','Δεν γνωρίζω'],why:'Κρίσιμο στοιχείο ΗΤΚ.'},
+  {id:'plans',t:'Υπάρχουν σχέδια;',type:'choice',opts:['Ναι','Όχι','Δεν γνωρίζω'],why:'Αντιστοίχιση με υφιστάμενη κατάσταση.'},
+  {id:'topo',t:'Υπάρχει τοπογραφικό;',type:'choice',opts:['Ναι','Όχι','Δεν γνωρίζω'],why:'Συχνά απαιτούμενο.'},
+  {id:'site',t:'Έχει γίνει αυτοψία / αποτύπωση;',type:'choice',opts:['Ναι','Όχι','Δεν γνωρίζω'],why:'Επιβεβαίωση πραγματικότητας.'}
+],
 'default':[
-  {id:'goal',t:'Τι θέλεις να πετύχεις με αυτή την υπόθεση;',type:'text',ph:'Σύντομη περιγραφή',why:'Βοηθά να οριστεί ο στόχος.'},
+  {id:'goal',t:'Τι θέλεις να πετύχεις;',type:'text',ph:'Σύντομη περιγραφή',why:'Ορίζει τον στόχο της υπόθεσης.'},
   {id:'docs',t:'Υπάρχουν διαθέσιμα έγγραφα;',type:'choice',opts:['Ναι','Όχι','Δεν γνωρίζω'],why:'Ο φάκελος ξεκινά από ό,τι υπάρχει.'},
-  {id:'site',t:'Χρειάζεται αυτοψία;',type:'choice',opts:['Ναι','Όχι','Δεν γνωρίζω'],why:'Σημαντικό για επιβεβαίωση πραγματικότητας.'}
+  {id:'site',t:'Χρειάζεται αυτοψία;',type:'choice',opts:['Ναι','Όχι','Δεν γνωρίζω'],why:'Επιβεβαίωση πραγματικής κατάστασης.'}
 ]
 };
 
-let state={screen:'home', cases:[], currentId:null, draft:{}, qIndex:0, tab:'overview', toast:null};
+const DEMOS=[
+  {
+    id:'demo_pea',
+    customer:'Δημήτρης Παπαδόπουλος',
+    phone:'69xxxxxxxx',
+    address:'Αιγάλεω',
+    workType:'ΠΕΑ',
+    answers:{year:'1972',plans:'Όχι',permit:'Δεν γνωρίζω',use:'Κατοικία',site:'Όχι'},
+    docs:[{name:'foto_facade.jpg',kb:420,kind:'Εικόνα'}]
+  },
+  {
+    id:'demo_permit',
+    customer:'Μαρία Κωνσταντίνου',
+    phone:'',
+    address:'Μαλεσίνα',
+    workType:'Νέα Άδεια',
+    answers:{stage:'Έλεγχος οικοπέδου',plot:'Οικόπεδο',topo:'Ναι',titles:'Δεν γνωρίζω',arch:'Όχι'},
+    docs:[{name:'topo_2008.pdf',kb:1200,kind:'PDF'}]
+  }
+];
 
-function uid(){return 'c_'+Date.now().toString(36)+Math.random().toString(36).slice(2,6)}
+let state={
+  screen:'home',
+  cases:[],
+  currentId:null,
+  draft:{},
+  qIndex:0,
+  tab:'overview',
+  toast:null
+};
+
+function uid(){return 'EEDEMK-'+new Date().getFullYear()+'-'+Math.random().toString(36).slice(2,6).toUpperCase()}
 function load(){try{const r=localStorage.getItem(KEY); if(r) state.cases=JSON.parse(r)||[]}catch(e){}}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(state.cases))}catch(e){}}
 function cur(){return state.cases.find(c=>c.id===state.currentId)||null}
 function qs(type){return Q[type]||Q.default}
-function statusOf(v){
+
+/** Evidence status from answer */
+function fromAnswer(v){
   if(v==='Ναι') return 'declared';
   if(v==='Όχι') return 'missing';
   if(v==='Δεν γνωρίζω') return 'needs_check';
-  return v? 'declared':'missing';
+  if(v && String(v).trim()) return 'declared';
+  return 'missing';
 }
+
 function chip(s){
   const m={
+    verified:{c:'var(--ok)',bg:'var(--okBg)',t:'ΕΠΑΛΗΘΕΥΜΕΝΟ'},
     declared:{c:'var(--warn)',bg:'var(--warnBg)',t:'ΔΗΛΩΘΗΚΕ'},
     needs_check:{c:'var(--warn)',bg:'var(--warnBg)',t:'ΠΡΟΣ ΕΛΕΓΧΟ'},
     missing:{c:'var(--bad)',bg:'var(--badBg)',t:'ΛΕΙΠΕΙ'},
+    conflict:{c:'var(--conflict)',bg:'var(--conflictBg)',t:'ΑΣΥΜΦΩΝΙΑ'},
     not_done:{c:'var(--bad)',bg:'var(--badBg)',t:'ΔΕΝ ΕΧΕΙ ΓΙΝΕΙ'},
-    verified:{c:'var(--ok)',bg:'var(--okBg)',t:'ΕΠΑΛΗΘΕΥΜΕΝΟ'},
+    outdated:{c:'var(--warn)',bg:'var(--warnBg)',t:'ΠΑΡΩΧΗΜΕΝΟ'},
     active:{c:'var(--navy)',bg:'var(--info)',t:'ΕΝΕΡΓΗ'},
-    pending:{c:'var(--warn)',bg:'var(--warnBg)',t:'ΣΕ ΑΝΑΜΟΝΗ'}
+    hold:{c:'var(--warn)',bg:'var(--warnBg)',t:'HOLD'},
+    proceed:{c:'var(--ok)',bg:'var(--okBg)',t:'PROCEED'}
   };
   const x=m[s]||m.needs_check;
   return `<span class="chip" style="background:${x.bg};color:${x.c}"><span style="width:6px;height:6px;background:${x.c};display:inline-block"></span>${x.t}</span>`;
 }
-function toast(msg){state.toast=msg; render(); setTimeout(()=>{state.toast=null; render()},1800)}
 
+function toast(msg){state.toast=msg; render(); setTimeout(()=>{state.toast=null; render()},1600)}
+
+/**
+ * Core reasoning: evidence table + critical gaps + decision + next safe action
+ * Philosophy: DECLARED ≠ VERIFIED · missing can continue if not blocking · conflicts escalate
+ */
 function compute(c){
   const a=c.answers||{};
   const docs=c.docs||[];
   const type=c.workType;
-  const items=[];
+  const evidence=[];
   const gaps=[];
+  const conflicts=[];
   const candidates=[];
 
-  items.push({name:'Πελάτης', value:c.customer||'—', status:'declared'});
-  items.push({name:'Διεύθυνση', value:c.address||'—', status:'declared'});
-  items.push({name:'Τύπος', value:type||'—', status:'declared'});
+  evidence.push({name:'Πελάτης', value:c.customer||'—', status:'declared', critical:false});
+  evidence.push({name:'Διεύθυνση', value:c.address||'—', status:'declared', critical:false});
+  evidence.push({name:'Διαδικασία', value:type||'—', status:'declared', critical:false});
+
+  // Document boosts: if relevant file uploaded, mark related item needs_check (not verified — human must confirm)
+  const hasPdf=docs.some(d=>d.kind==='PDF');
+  const hasCad=docs.some(d=>d.kind==='CAD');
+  const hasImg=docs.some(d=>d.kind==='Εικόνα');
 
   if(type==='Νέα Άδεια'){
-    const stage=a.stage||'—';
-    const topo=statusOf(a.topo);
-    const titles=statusOf(a.titles);
-    const arch=statusOf(a.arch);
-    items.push({name:'Στάδιο έργου', value:stage, status:a.stage?'declared':'missing'});
-    items.push({name:'Τοπογραφικό', value:a.topo||'—', status:topo});
-    items.push({name:'Τίτλοι', value:a.titles||'—', status:titles});
-    items.push({name:'Αρχιτεκτονική μελέτη', value:a.arch||'—', status:arch});
-    if(topo==='missing'){gaps.push('Τοπογραφικό'); candidates.push({p:1,title:'Εξασφάλισε κατάλληλο τοπογραφικό', why:'Συχνά προαπαιτείται πριν τις μελέτες / υποβολή.'});}
-    if(titles==='missing'){gaps.push('Τίτλοι'); candidates.push({p:2,title:'Συγκέντρωσε τίτλους ιδιοκτησίας', why:'Χρειάζονται για ταυτοποίηση ακινήτου.'});}
-    if(arch==='missing'){candidates.push({p:3,title:'Ανάθεσε / επιβεβαίωσε αρχιτεκτονική μελέτη', why:'Επόμενο κρίσιμο deliverable.'});}
-    if(!a.stage) candidates.push({p:1,title:'Όρισε το στάδιο του έργου', why:'Χωρίς στάδιο δεν προτεραιοποιούνται σωστά τα βήματα.'});
-  } else if(type==='ΠΕΑ'){
-    const plans=statusOf(a.plans);
-    const permit=statusOf(a.permit);
-    items.push({name:'Έτος', value:a.year||'—', status:a.year?'declared':'missing'});
-    items.push({name:'Σχέδια', value:a.plans||'—', status:plans});
-    items.push({name:'Άδεια', value:a.permit||'—', status:permit});
-    items.push({name:'Χρήση', value:a.use||'—', status:a.use?statusOf(a.use==='Δεν γνωρίζω'?'Δεν γνωρίζω':'Ναι'):'missing'});
-    if(plans==='missing'){gaps.push('Σχέδια'); candidates.push({p:1,title:'Συγκέντρωσε σχέδια ή προγραμμάτισε αποτύπωση', why:'Χωρίς κάτοψη αυξάνεται ο κίνδυνος.'});}
-    if(permit==='missing'){gaps.push('Οικοδομική άδεια'); candidates.push({p:2,title:'Εντόπισε οικοδομική άδεια / νομιμοποίηση', why:'Βασικό στοιχείο φακέλου.'});}
-    if(!a.year) candidates.push({p:2,title:'Καταχώρισε έτος κατασκευής', why:'Χρειάζεται για ενεργειακή αξιολόγηση.'});
-  } else if(type==='Τοπογραφικό'){
-    const old=statusOf(a.old);
-    const titles=statusOf(a.titles);
-    const kaek=statusOf(a.kaek);
-    items.push({name:'Σκοπός', value:a.purpose||'—', status:a.purpose?'declared':'missing'});
-    items.push({name:'Παλαιό διάγραμμα', value:a.old||'—', status:old});
-    items.push({name:'Τίτλοι', value:a.titles||'—', status:titles});
-    items.push({name:'ΚΑΕΚ', value:a.kaek||'—', status:kaek});
-    if(old==='missing'){gaps.push('Παλαιό τοπογραφικό'); candidates.push({p:1,title:'Ζήτησε παλαιά διαγράμματα', why:'Μειώνει λάθη στα όρια.'});}
-    if(titles==='missing'){gaps.push('Τίτλοι'); candidates.push({p:2,title:'Συγκέντρωσε τίτλους', why:'Απαραίτητοι για προσδιορισμό ορίων.'});}
-  } else if(type==='Άδεια Μικρής Κλίμακας'){
-    const plans=statusOf(a.plans);
-    items.push({name:'Εργασία', value:a.work||'—', status:a.work?'declared':'missing'});
-    items.push({name:'Παλαιά άδεια', value:a.exist_permit||'—', status:statusOf(a.exist_permit)});
-    items.push({name:'Σχέδια', value:a.plans||'—', status:plans});
-    if(plans==='missing'){gaps.push('Σχέδια'); candidates.push({p:1,title:'Συγκέντρωσε σχέδια υφιστάμενης κατάστασης', why:'Βοηθά πριν την αυτοψία και την υποβολή.'});}
-    if(!a.work) candidates.push({p:1,title:'Όρισε το είδος εργασίας', why:'Καθορίζει το εύρος της άδειας.'});
-  } else {
-    items.push({name:'Στόχος', value:a.goal||'—', status:a.goal?'declared':'missing'});
-    items.push({name:'Έγγραφα', value:a.docs||'—', status:statusOf(a.docs)});
+    const topo=fromAnswer(a.topo);
+    const titles=fromAnswer(a.titles);
+    const arch=fromAnswer(a.arch);
+    evidence.push({name:'Στάδιο έργου', value:a.stage||'—', status:a.stage?'declared':'missing', critical:true});
+    evidence.push({name:'Είδος ακινήτου', value:a.plot||'—', status:a.plot?fromAnswer(a.plot==='Δεν γνωρίζω'?'Δεν γνωρίζω':'Ναι'):'missing', critical:false});
+    evidence.push({name:'Τοπογραφικό', value:a.topo||'—', status: topo==='declared' && hasPdf ? 'needs_check' : topo, critical:true, note: topo==='declared' && hasPdf ? 'Αρχείο στον φάκελο — δεν έχει επαληθευτεί' : ''});
+    evidence.push({name:'Τίτλοι', value:a.titles||'—', status:titles, critical:true});
+    evidence.push({name:'Αρχιτεκτονική μελέτη', value:a.arch||'—', status:arch, critical:false});
+
+    if(!a.stage){ gaps.push({name:'Στάδιο έργου', level:'critical'}); candidates.push({p:1,title:'Όρισε το στάδιο του έργου', why:'Χωρίς στάδιο δεν προτεραιοποιούνται σωστά τα βήματα.', decision:'REQUIRES_VERIFICATION'}); }
+    if(topo==='missing'){ gaps.push({name:'Τοπογραφικό', level:'critical'}); candidates.push({p:1,title:'Εξασφάλισε κατάλληλο τοπογραφικό', why:'Συχνά προαπαιτείται πριν μελέτες/υποβολή. Ύπαρξη ≠ επαλήθευση.', decision:'REQUIRES_VERIFICATION'}); }
+    if(topo==='declared' || (topo==='needs_check')){ candidates.push({p:2,title:'Επαλήθευσε το τοπογραφικό πριν το χρησιμοποιήσεις ως βάση', why:'Υπάρχει δήλωση/αρχείο — δεν θεωρείται VERIFIED χωρίς έλεγχο μηχανικού.', decision:'REQUIRES_VERIFICATION'}); }
+    if(titles==='missing'){ gaps.push({name:'Τίτλοι', level:'critical'}); candidates.push({p:2,title:'Συγκέντρωσε τίτλους ιδιοκτησίας', why:'Χρειάζονται για ταυτοποίηση ακινήτου.', decision:'REQUIRES_VERIFICATION'}); }
+    if(arch==='missing'){ candidates.push({p:4,title:'Ανάθεσε ή επιβεβαίωσε αρχιτεκτονική μελέτη', why:'Επόμενο deliverable — δεν μπλοκάρει πάντα το τρέχον στάδιο.', decision:'REQUIRES_VERIFICATION'}); }
+  }
+  else if(type==='ΠΕΑ'){
+    const plans=fromAnswer(a.plans);
+    const permit=fromAnswer(a.permit);
+    const site=fromAnswer(a.site);
+    evidence.push({name:'Έτος κατασκευής', value:a.year||'—', status:a.year?'declared':'missing', critical:true});
+    evidence.push({name:'Σχέδια', value:a.plans||'—', status:plans, critical:true});
+    evidence.push({name:'Οικοδομική άδεια', value:a.permit||'—', status:permit, critical:true});
+    evidence.push({name:'Χρήση', value:a.use||'—', status:a.use?fromAnswer(a.use==='Δεν γνωρίζω'?'Δεν γνωρίζω':'Ναι'):'missing', critical:true});
+    evidence.push({name:'Αυτοψία', value:a.site||'—', status:site==='declared'?'declared':(site==='missing'?'not_done':site), critical:true});
+
+    if(plans==='missing'){ gaps.push({name:'Σχέδια', level:'critical'}); candidates.push({p:1,title:'Συγκέντρωσε σχέδια ή προγραμμάτισε αποτύπωση', why:'Χωρίς κάτοψη αυξάνεται ο κίνδυνος λάθους στον φάκελο ΠΕΑ.', decision:'REQUIRES_VERIFICATION'}); }
+    if(permit==='missing'){ gaps.push({name:'Οικοδομική άδεια', level:'critical'}); candidates.push({p:2,title:'Εντόπισε οικοδομική άδεια ή κατάσταση νομιμότητας', why:'DECLARED από ιδιοκτήτη δεν αρκεί — απαιτείται τεκμηρίωση.', decision:'REQUIRES_VERIFICATION'}); }
+    if(permit==='needs_check'){ candidates.push({p:2,title:'Επαλήθευσε αν υπάρχει άδεια (μη θεωρήσεις τη δήλωση δεδομένη)', why:'Δεν γνωρίζω → needs verification, όχι proceed.', decision:'REQUIRES_VERIFICATION'}); }
+    if(site!=='declared'){ candidates.push({p:3,title:'Ολοκλήρωσε αυτοψία πριν τελική αξιολόγηση', why:'Η πραγματική κατάσταση δεν έχει επιβεβαιωθεί.', decision:'REQUIRES_VERIFICATION'}); }
+    if(!a.year){ gaps.push({name:'Έτος', level:'important'}); candidates.push({p:3,title:'Καταχώρισε έτος κατασκευής', why:'Χρειάζεται για ενεργειακή αξιολόγηση.', decision:'REQUIRES_VERIFICATION'}); }
+    // soft conflict example: old building + no plans
+    if(a.year && +a.year<1980 && plans==='missing'){
+      conflicts.push({title:'Παλαιό κτίριο χωρίς σχέδια', detail:'Κτίριο προ 1980 χωρίς επιβεβαιωμένα σχέδια — αυξημένος κίνδυνος απόκλισης υφιστάμενης κατάστασης.'});
+    }
+  }
+  else if(type==='Τοπογραφικό'){
+    const old=fromAnswer(a.old);
+    const titles=fromAnswer(a.titles);
+    const kaek=fromAnswer(a.kaek);
+    evidence.push({name:'Σκοπός', value:a.purpose||'—', status:a.purpose?'declared':'missing', critical:true});
+    evidence.push({name:'Παλαιό διάγραμμα', value:a.old||'—', status:old, critical:true});
+    evidence.push({name:'Τίτλοι', value:a.titles||'—', status:titles, critical:true});
+    evidence.push({name:'ΚΑΕΚ', value:a.kaek||'—', status:kaek, critical:true});
+    if(old==='missing'){ gaps.push({name:'Παλαιό τοπογραφικό', level:'important'}); candidates.push({p:1,title:'Ζήτησε παλαιά διαγράμματα από πελάτη', why:'Μειώνει λάθη στα όρια πριν νέα αποτύπωση.', decision:'REQUIRES_VERIFICATION'}); }
+    if(titles==='missing'){ gaps.push({name:'Τίτλοι', level:'critical'}); candidates.push({p:1,title:'Συγκέντρωσε τίτλους ιδιοκτησίας', why:'Απαραίτητοι για προσδιορισμό ορίων.', decision:'REQUIRES_VERIFICATION'}); }
+    if(kaek==='missing'||kaek==='needs_check'){ candidates.push({p:3,title:'Έλεγξε/εντόπισε ΚΑΕΚ όπου εφαρμόζεται', why:'Σύνδεση με Κτηματολόγιο.', decision:'REQUIRES_VERIFICATION'}); }
+  }
+  else if(type==='Άδεια Μικρής Κλίμακας'){
+    const plans=fromAnswer(a.plans);
+    const site=fromAnswer(a.site);
+    evidence.push({name:'Είδος εργασίας', value:a.work||'—', status:a.work?'declared':'missing', critical:true});
+    evidence.push({name:'Παλαιά άδεια/νομιμοποίηση', value:a.exist_permit||'—', status:fromAnswer(a.exist_permit), critical:true});
+    evidence.push({name:'Σχέδια υφιστάμενης', value:a.plans||'—', status:plans, critical:true});
+    evidence.push({name:'Αυτοψία', value:a.site||'—', status:site==='missing'||!a.site?'not_done':fromAnswer(a.site), critical:true});
+    if(!a.work){ gaps.push({name:'Είδος εργασίας', level:'critical'}); candidates.push({p:1,title:'Όρισε το είδος εργασίας', why:'Καθορίζει το εύρος της άδειας μικρής κλίμακας.', decision:'REQUIRES_VERIFICATION'}); }
+    if(plans==='missing'){ gaps.push({name:'Σχέδια', level:'important'}); candidates.push({p:2,title:'Συγκέντρωσε σχέδια υφιστάμενης κατάστασης', why:'Βοηθά πριν αυτοψία και υποβολή.', decision:'REQUIRES_VERIFICATION'}); }
+    if(site!=='declared'){ candidates.push({p:2,title:'Προγραμμάτισε αυτοψία', why:'Σύγκριση πραγματικότητας με διαθέσιμα στοιχεία.', decision:'REQUIRES_VERIFICATION'}); }
+  }
+  else if(type==='Αυθαίρετο'){
+    const known=fromAnswer(a.known);
+    const photos=fromAnswer(a.photos);
+    const plans=fromAnswer(a.plans);
+    evidence.push({name:'Απόκλιση από εγκεκριμένα', value:a.known||'—', status:known, critical:true});
+    evidence.push({name:'Φωτογραφίες', value:a.photos||'—', status:photos, critical:true});
+    evidence.push({name:'Παλαιά σχέδια/άδεια', value:a.plans||'—', status:plans, critical:true});
+    evidence.push({name:'Χρόνος κατασκευής', value:a.year||'—', status:a.year?'declared':'missing', critical:true});
+    if(known==='declared'){ conflicts.push({title:'Δηλωμένη απόκλιση', detail:'Υπάρχει δήλωση απόκλισης — απαιτείται έλεγχος πραγματικής χρήσης/κατάστασης πριν οποιαδήποτε πρόταση τακτοποίησης.'}); }
+    candidates.push({p:1,title:'Μην προτείνεις αυτόματη τακτοποίηση — έλεγξε χρήση, χρόνο και σχέδια', why:'Ν.4495/2017 ως πλαίσιο αναφοράς· η τεχνική κρίση ανήκει στον μηχανικό. Decision: ESCALATE / VERIFY.', decision:'ESCALATE'});
+    if(photos==='missing'){ gaps.push({name:'Φωτογραφίες', level:'important'}); }
+    if(plans==='missing'){ gaps.push({name:'Σχέδια', level:'important'}); }
+  }
+  else if(type==='ΗΤΚ'){
+    const permit=fromAnswer(a.permit);
+    const plans=fromAnswer(a.plans);
+    const topo=fromAnswer(a.topo);
+    const site=fromAnswer(a.site);
+    evidence.push({name:'Οικοδομική άδεια', value:a.permit||'—', status:permit, critical:true});
+    evidence.push({name:'Σχέδια', value:a.plans||'—', status:plans, critical:true});
+    evidence.push({name:'Τοπογραφικό', value:a.topo||'—', status:topo, critical:true});
+    evidence.push({name:'Αυτοψία/αποτύπωση', value:a.site||'—', status:site==='missing'||!a.site?'not_done':site, critical:true});
+    if(plans==='missing'||plans==='needs_check'){ gaps.push({name:'Σχέδια', level:'critical'}); candidates.push({p:1,title:'Έλεγχος αντιστοίχισης σχεδίων με υφιστάμενη κατάσταση', why:'Κρίσιμο για ΗΤΚ πριν ολοκλήρωση φακέλου.', decision:'REQUIRES_VERIFICATION'}); }
+    if(permit==='missing'){ gaps.push({name:'Άδεια', level:'critical'}); candidates.push({p:1,title:'Εντόπισε οικοδομική άδεια', why:'Βασικό στοιχείο ΗΤΚ.', decision:'REQUIRES_VERIFICATION'}); }
+    if(site!=='declared'){ candidates.push({p:2,title:'Ολοκλήρωσε αυτοψία / αποτύπωση', why:'Επιβεβαίωση πραγματικής κατάστασης.', decision:'REQUIRES_VERIFICATION'}); }
+  }
+  else {
+    evidence.push({name:'Στόχος', value:a.goal||'—', status:a.goal?'declared':'missing', critical:true});
+    evidence.push({name:'Έγγραφα', value:a.docs||'—', status:fromAnswer(a.docs), critical:false});
   }
 
-  items.push({name:'Έγγραφα στον φάκελο', value:docs.length? (docs.length+' αρχείο/α'):'Κανένα', status:docs.length?'declared':'missing'});
-  items.push({name:'Αυτοψία', value:'Δεν έχει γίνει', status:'not_done'});
+  evidence.push({name:'Αρχεία στον φάκελο', value:docs.length?docs.length+' αρχείο/α':'Κανένα', status:docs.length?'declared':'missing', critical:false});
+  if(!docs.some(()=>false) && docs.length===0){
+    candidates.push({p:5,title:'Συγκέντρωσε διαθέσιμα έγγραφα στον τεχνικό φάκελο', why:'Ο φάκελος προετοιμάζει την αυτοψία. Δεν αντικαθιστά επαλήθευση.', decision:'REQUIRES_VERIFICATION'});
+  }
+  if(hasCad){
+    candidates.push({p:4,title:'Έλεγξε περιεχόμενο CAD (ανθρώπινος έλεγχος)', why:'CAD → needs_review. Δεν γίνεται αυτόματα VERIFIED.', decision:'REQUIRES_VERIFICATION'});
+  }
 
-  if(docs.length===0) candidates.push({p:4,title:'Συγκέντρωσε διαθέσιμα έγγραφα', why:'Ο τεχνικός φάκελος προετοιμάζει την αυτοψία και μειώνει αβεβαιότητα.'});
-  candidates.push({p:9,title:'Προγραμμάτισε αυτοψία όταν έχεις βασικά στοιχεία', why:'Η πραγματική κατάσταση επιβεβαιώνεται επιτόπου.'});
+  // Always keep a lower-priority site reminder if not covered
+  if(!candidates.some(x=>/αυτοψία/i.test(x.title)) && type!=='Τοπογραφικό'){
+    candidates.push({p:8,title:'Όταν έχεις βασικά στοιχεία, προγραμμάτισε αυτοψία', why:'Η πραγματική κατάσταση επιβεβαιώνεται επιτόπου. Λείποντα στοιχεία μπορούν να μείνουν ως εκκρεμότητα αν δεν μπλοκάρουν το τρέχον στάδιο.', decision:'REQUIRES_VERIFICATION'});
+  }
 
   candidates.sort((x,y)=>x.p-y.p);
-  const primary=candidates[0]||{title:'Ο φάκελος μπορεί να προχωρήσει σε έλεγχο', why:'Δεν εντοπίζονται κρίσιμα κενά υψηλής προτεραιότητας.'};
+  const primary=candidates[0]||{title:'Ο φάκελος μπορεί να προχωρήσει σε τελικό έλεγχο μηχανικού', why:'Δεν εντοπίζονται κρίσιμα κενά υψηλής προτεραιότητας. Η τελική κρίση παραμένει στον μηχανικό.', decision:'PROCEED'};
   const secondary=candidates.slice(1,3);
 
-  return {items, gaps, primary, secondary};
+  const criticalCount=gaps.filter(g=>g.level==='critical').length;
+  let decision='REQUIRES_VERIFICATION';
+  if(conflicts.length) decision='ESCALATE';
+  else if(criticalCount===0 && primary.decision==='PROCEED') decision='PROCEED';
+  else if(criticalCount>0) decision='REQUIRES_VERIFICATION';
+
+  const counts={
+    verified:evidence.filter(e=>e.status==='verified').length,
+    declared:evidence.filter(e=>e.status==='declared').length,
+    needs:evidence.filter(e=>e.status==='needs_check').length,
+    missing:evidence.filter(e=>e.status==='missing'||e.status==='not_done').length,
+    conflict:conflicts.length
+  };
+
+  return {evidence, gaps, conflicts, primary, secondary, decision, counts, criticalCount};
 }
 
 function top(title, right=''){
@@ -205,21 +336,37 @@ function render(){
 
 function viewHome(){
   const list=[...state.cases].sort((a,b)=>(b.updatedAt||0)-(a.updatedAt||0));
-  return `<div class="hero"><div style="font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:#9FB3CC">AI Senior Engineer</div>
-  <div class="h1" style="color:#F5F4EF">Υποθέσεις</div>
-  <p>Οργάνωσε τον φάκελο. Εντόπισε κενά. Δες το επόμενο ασφαλές βήμα.</p></div>
+  return `<div class="hero">
+    <div style="font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:#9FB3CC">AI Senior Engineer</div>
+    <div class="h1" style="color:#F5F4EF">Υποθέσεις</div>
+    <p>Case → Evidence → Gaps → Next Safe Action.<br>Δεν αντικαθιστά τον μηχανικό — οργανώνει και καθοδηγεί.</p>
+  </div>
   <div class="scroll">
     <button data-go="new" class="card" style="width:100%;display:flex;gap:12px;align-items:center;border-color:var(--navy)">
       <div style="width:36px;height:36px;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:800">+</div>
-      <div style="text-align:left"><div style="font-weight:800">Νέα υπόθεση</div><div class="muted">Όνομα · Διεύθυνση · Τηλέφωνο · Τύπος</div></div>
+      <div style="text-align:left"><div style="font-weight:800">Νέα υπόθεση</div><div class="muted">Όνομα · Διεύθυνση · Τηλέφωνο · Διαδικασία</div></div>
     </button>
+
+    <div class="label" style="margin-top:6px">Demo υποθέσεις</div>
+    ${DEMOS.map(d=>`<button data-demo="${d.id}" class="card" style="width:100%;text-align:left">
+      <div style="font-weight:800">${d.workType} — ${d.address}</div>
+      <div class="muted">${d.customer}</div>
+    </button>`).join('')}
+
     <div class="label" style="margin-top:8px">Αποθηκευμένες</div>
-    ${list.length? list.map(c=>`<button data-open="${c.id}" class="card" style="width:100%;text-align:left">
-      <div style="display:flex;justify-content:space-between;gap:8px">
-        <div style="min-width:0"><div style="font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${c.customer||'Χωρίς όνομα'}</div>
-        <div class="muted">${c.workType||'—'} · ${c.address||'—'}</div></div>
-        ${chip('active')}
-      </div></button>`).join('') : `<div class="card muted">Δεν υπάρχουν ακόμη υποθέσεις.</div>`}
+    ${list.length? list.map(c=>{
+      const d=compute(c);
+      return `<button data-open="${c.id}" class="card" style="width:100%;text-align:left">
+        <div style="display:flex;justify-content:space-between;gap:8px;align-items:flex-start">
+          <div style="min-width:0">
+            <div style="font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${c.customer||'Χωρίς όνομα'}</div>
+            <div class="muted">${c.workType||'—'} · ${c.address||'—'}</div>
+            <div class="muted" style="margin-top:4px">${d.criticalCount? d.criticalCount+' κρίσιμα κενά' : 'Χωρίς κρίσιμα κενά'} · ${d.primary.title.slice(0,42)}${d.primary.title.length>42?'…':''}</div>
+          </div>
+          ${chip(d.decision==='PROCEED'?'proceed':d.decision==='ESCALATE'?'conflict':'hold')}
+        </div>
+      </button>`;
+    }).join('') : `<div class="card muted">Δεν υπάρχουν ακόμη αποθηκευμένες υποθέσεις.</div>`}
   </div>`;
 }
 
@@ -230,7 +377,7 @@ function viewNew(){
   <div class="scroll">
     <button data-go="home" class="muted" style="font-weight:700;margin-bottom:10px">← Πίσω</button>
     <div class="h2">Δημιουργία φακέλου</div>
-    <p class="muted" style="margin-bottom:14px">Η αρχειοθέτηση ξεκινά από εδώ. Ό,τι δηλώνεται θεωρείται δήλωση μέχρι να τεκμηριωθεί.</p>
+    <p class="muted" style="margin-bottom:14px">Η αρχειοθέτηση ξεκινά εδώ. Ό,τι δηλώνεται είναι DECLARED μέχρι να τεκμηριωθεί.</p>
     <div class="label">Πελάτης / Όνομα *</div>
     <input id="customer" value="${d.customer||''}" placeholder="Ονοματεπώνυμο"/>
     <div style="height:10px"></div>
@@ -240,8 +387,8 @@ function viewNew(){
     <div class="label">Διεύθυνση *</div>
     <input id="address" value="${d.address||''}" placeholder="Οδός, αριθμός, περιοχή"/>
     <div style="height:12px"></div>
-    <div class="label">Τύπος πρώτης εργασίας *</div>
-    <div class="grid2" style="margin-top:6px">${TYPES.map(t=>`<button data-type="${t}" class="choice ${d.workType===t?'on':''}" style="margin:0;font-size:12.5px">${t}</button>`).join('')}</div>
+    <div class="label">Διαδικασία *</div>
+    <div class="grid2" style="margin-top:6px">${TYPES.map(t=>`<button data-type="${t}" class="choice ${d.workType===t?'on':''}" style="margin:0;font-size:12px">${t}</button>`).join('')}</div>
   </div>
   <div class="foot"><button data-create class="btn" ${ok?'':'disabled'}>Αποθήκευση & Smart Intake →</button></div>`;
 }
@@ -255,10 +402,11 @@ function viewIntake(){
   return `${top(c.workType+' · Intake')}
   <div class="scroll">
     <button data-back-q class="muted" style="font-weight:700;margin-bottom:10px">← Πίσω</button>
+    <div class="progress">${['Case','Intake','Evidence','Action','Review'].map((s,i)=>`<span class="${i<=1?'on':''}">${s}</span>`).join('')}</div>
     <div style="display:flex;gap:3px;margin-bottom:12px">${list.map((_,i)=>`<div style="flex:1;height:3px;background:${i<=state.qIndex?'var(--navy)':'var(--line)'}"></div>`).join('')}</div>
     <div class="label">Ερώτηση ${state.qIndex+1}/${list.length}</div>
     <div class="h2">${q.t}</div>
-    <div class="card" style="background:#EFEDE4;border:none;border-left:2px solid var(--soft);font-size:12.5px;color:#454540">${q.why}</div>
+    <div class="quote">${q.why}</div>
     <div style="margin-top:14px">
       ${q.type==='text'
         ? `<input id="ans" value="${val}" placeholder="${q.ph||''}"/>`
@@ -271,41 +419,59 @@ function viewIntake(){
 function viewCase(){
   const c=cur(); if(!c) return viewHome();
   const d=compute(c);
-  return `${top(c.customer||'Υπόθεση', chip('active'))}
+  return `${top(c.customer||'Υπόθεση', chip(d.decision==='PROCEED'?'proceed':d.decision==='ESCALATE'?'conflict':'hold'))}
   <div class="scroll">
     <button data-go="home" class="muted" style="font-weight:700;margin-bottom:8px">← Υποθέσεις</button>
     <div class="card">
-      <div class="label">Τύπος</div><div style="font-weight:800">${c.workType}</div>
+      <div class="label">Case ID</div><div style="font-weight:700;font-size:13px">${c.id}</div>
+      <div class="label" style="margin-top:10px">Διαδικασία</div><div style="font-weight:800">${c.workType}</div>
       <div class="label" style="margin-top:10px">Διεύθυνση</div><div>${c.address||'—'}</div>
       ${c.phone?`<div class="label" style="margin-top:10px">Τηλέφωνο</div><div>${c.phone}</div>`:''}
     </div>
+
+    <div class="row" style="margin-bottom:10px">
+      <div class="stat"><b>${d.counts.declared}</b><br>Δηλωμένα</div>
+      <div class="stat"><b>${d.counts.needs}</b><br>Προς έλεγχο</div>
+      <div class="stat"><b style="color:var(--bad)">${d.counts.missing}</b><br>Λείπουν</div>
+      <div class="stat"><b style="color:var(--conflict)">${d.counts.conflict}</b><br>Ασυμφωνίες</div>
+    </div>
+
     <div class="nsa">
-      <div class="t">Next Safe Action</div>
+      <div class="t">Next Safe Action · ${d.decision}</div>
       <div style="font-weight:800;font-size:15px;line-height:1.35">${d.primary.title}</div>
       <div class="muted" style="margin-top:6px">${d.primary.why}</div>
     </div>
+
     <div class="tabs">
       <button data-tab="overview" class="tab ${state.tab==='overview'?'on':''}">Επισκόπηση</button>
-      <button data-tab="evidence" class="tab ${state.tab==='evidence'?'on':''}">Στοιχεία</button>
-      <button data-go="files" class="tab">Έγγραφα</button>
+      <button data-tab="evidence" class="tab ${state.tab==='evidence'?'on':''}">Evidence</button>
+      <button data-go="files" class="tab">Φάκελος</button>
       <button data-go="review" class="tab">Review</button>
     </div>
+
     ${state.tab==='overview'?`
-      <div class="muted" style="margin-bottom:10px">Τι έχουμε τώρα · τι λείπει · τι πρέπει να γίνει μετά.</div>
-      ${d.gaps.length?`<div class="card" style="background:var(--badBg);border-color:var(--bad)"><b style="color:var(--bad)">Κρίσιμα κενά:</b> ${d.gaps.join(' · ')}</div>`:''}
+      ${d.criticalCount?`<div class="card" style="background:var(--badBg);border-color:var(--bad)"><b style="color:var(--bad)">Κρίσιμα κενά: ${d.criticalCount}</b><div style="margin-top:4px">${d.gaps.filter(g=>g.level==='critical').map(g=>g.name).join(' · ')}</div></div>`:''}
+      ${d.conflicts.length? d.conflicts.map(cf=>`<div class="card" style="background:var(--conflictBg);border-color:var(--conflict)"><b style="color:var(--conflict)">⚠ ${cf.title}</b><div class="muted" style="margin-top:4px">${cf.detail}</div></div>`).join('') : ''}
       <div class="card"><div class="label">Secondary actions</div>
         ${d.secondary.map(s=>`<div style="margin-top:8px"><b>${s.title}</b><div class="muted">${s.why}</div></div>`).join('')||'<div class="muted">—</div>'}
       </div>
-      <div class="card" style="background:#EFEDE4;border:none;font-size:12.5px;line-height:1.5">Τα έγγραφα είναι τεχνικός φάκελος εργασίας. Δεν αντικαθιστούν την κρίση του μηχανικού.</div>
-    `: `
-      ${d.items.map(it=>`<div class="card"><div style="display:flex;justify-content:space-between;gap:8px">
-        <div><div style="font-weight:800">${it.name}</div><div>${it.value}</div></div>${chip(it.status)}
-      </div></div>`).join('')}
+      <div class="quote">DECLARED ≠ VERIFIED. Το σύστημα δεν προχωρά σε PROCEED όσο υπάρχουν critical gaps ή ασυμφωνίες χωρίς έλεγχο μηχανικού.</div>
+    `:`
+      ${d.evidence.map(it=>`<div class="card">
+        <div style="display:flex;justify-content:space-between;gap:8px;align-items:flex-start">
+          <div>
+            <div style="font-weight:800">${it.name}${it.critical?' · critical':''}</div>
+            <div>${it.value}</div>
+            ${it.note?`<div class="muted" style="margin-top:4px">${it.note}</div>`:''}
+          </div>
+          ${chip(it.status)}
+        </div>
+      </div>`).join('')}
     `}
   </div>
   <div class="foot row">
     <button data-del class="btn danger" style="width:auto;padding:12px 14px">Διαγραφή</button>
-    <button data-go="files" class="btn">Έγγραφα →</button>
+    <button data-go="files" class="btn">Τεχνικός φάκελος →</button>
   </div>`;
 }
 
@@ -315,22 +481,23 @@ function viewFiles(){
   return `${top('Technical Folder')}
   <div class="scroll">
     <button data-go="case" class="muted" style="font-weight:700;margin-bottom:10px">← Υπόθεση</button>
-    <div class="h2">Έγγραφα</div>
-    <p class="muted" style="margin-bottom:12px">PDF, σχέδια, φωτογραφίες. Σκοπός: προετοιμασία πριν την αυτοψία — όχι αυτόματη «μαγική» ανάλυση.</p>
+    <div class="h2">Τεχνικός φάκελος</div>
+    <p class="muted" style="margin-bottom:12px">Έγγραφα = φάκελος εργασίας. Δεν γίνονται αυτόματα VERIFIED. Σκοπός: προετοιμασία πριν αυτοψία.</p>
     <div class="card" style="text-align:center;border-style:dashed">
-      <input type="file" id="fileInput" multiple accept=".pdf,.dwg,.dxf,.jpg,.jpeg,.png,.doc,.docx"/>
+      <input type="file" id="fileInput" multiple accept=".pdf,.dwg,.dxf,.jpg,.jpeg,.png"/>
       <div class="muted" style="margin-top:8px">PDF · CAD · Εικόνες</div>
     </div>
     <div class="row" style="margin:12px 0">
-      <div class="stat"><b>${docs.filter(d=>/\.pdf$/i.test(d.name)).length}</b><br>PDF</div>
-      <div class="stat"><b>${docs.filter(d=>/\.(dwg|dxf)$/i.test(d.name)).length}</b><br>CAD</div>
-      <div class="stat"><b>${docs.filter(d=>/\.(jpe?g|png)$/i.test(d.name)).length}</b><br>Εικόνες</div>
+      <div class="stat"><b>${docs.filter(d=>d.kind==='PDF').length}</b><br>PDF</div>
+      <div class="stat"><b>${docs.filter(d=>d.kind==='CAD').length}</b><br>CAD</div>
+      <div class="stat"><b>${docs.filter(d=>d.kind==='Εικόνα').length}</b><br>Εικόνες</div>
     </div>
     ${docs.length? docs.map((d,i)=>`<div class="card" style="display:flex;justify-content:space-between;gap:8px">
       <div style="min-width:0"><div style="font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${d.name}</div>
-      <div class="muted">${d.kb} KB · ${d.kind}</div></div>
+      <div class="muted">${d.kb} KB · ${d.kind} · προς έλεγχο</div></div>
       <button data-rm="${i}" style="color:var(--muted)">×</button></div>`).join('')
-      : `<div class="card" style="background:var(--warnBg)">Δεν έχουν προστεθεί αρχεία.</div>`}
+      : `<div class="card" style="background:var(--warnBg)">Δεν έχουν προστεθεί αρχεία. Η διαδικασία μπορεί να συνεχιστεί — το κενό παραμένει ως εκκρεμότητα.</div>`}
+    ${docs.some(d=>d.kind==='CAD')?`<div class="quote">CAD: καταχωρήθηκε ως needs_review. Απαιτείται ανθρώπινος έλεγχος περιεχομένου.</div>`:''}
   </div>
   <div class="foot"><button data-go="review" class="btn">Senior Review →</button></div>`;
 }
@@ -338,63 +505,144 @@ function viewFiles(){
 function viewReview(){
   const c=cur(); if(!c) return viewHome();
   const d=compute(c);
+  const hold = d.decision!=='PROCEED';
   return `${top('Senior Review')}
   <div class="scroll">
     <button data-go="case" class="muted" style="font-weight:700;margin-bottom:10px">← Υπόθεση</button>
     <div class="h2">Senior Review</div>
-    <p class="muted">Προτεραιοποιημένη σκέψη — όχι τελική τεχνική κρίση.</p>
-    ${d.gaps.length?`<div class="card" style="background:var(--badBg);border-color:var(--bad)"><b style="color:var(--bad)">Κρίσιμα κενά: ${d.gaps.length}</b><div style="margin-top:4px">${d.gaps.join(' · ')}</div></div>`:''}
+    <p class="muted">Συνολική αξιολόγηση ασφαλείας — όχι τελική τεχνική υπογραφή.</p>
+
+    <div class="card" style="border-color:${hold?'var(--warn)':'var(--ok)'};background:${hold?'var(--warnBg)':'var(--okBg)'}">
+      <div class="label">Decision state</div>
+      <div style="font-weight:800;font-size:16px">${d.decision}</div>
+      <div class="muted" style="margin-top:6px">${hold
+        ? 'Η υπόθεση παραμένει σε έλεγχο. Δεν επιτρέπεται ασφαλές downstream proceed όσο υπάρχουν κρίσιμα κενά ή ασυμφωνίες.'
+        : 'Δεν εντοπίζονται κρίσιμα blockers. Η τελική κρίση παραμένει στον μηχανικό.'}</div>
+    </div>
+
+    ${d.criticalCount?`<div class="card" style="background:var(--badBg);border-color:var(--bad)"><b style="color:var(--bad)">Κρίσιμα κενά: ${d.criticalCount}</b><div style="margin-top:4px">${d.gaps.filter(g=>g.level==='critical').map(g=>g.name).join(' · ')}</div></div>`:''}
+    ${d.conflicts.map(cf=>`<div class="card" style="background:var(--conflictBg);border-color:var(--conflict)"><b>⚠ ${cf.title}</b><div class="muted" style="margin-top:4px">${cf.detail}</div></div>`).join('')}
+
     <div class="nsa">
       <div class="t">Primary Next Safe Action</div>
       <div style="font-weight:800;font-size:15px">${d.primary.title}</div>
       <div class="muted" style="margin-top:6px">${d.primary.why}</div>
     </div>
+
     <div class="card"><div class="label">Επόμενα μετά από αυτό</div>
       ${d.secondary.map(s=>`<div style="margin:8px 0"><b>${s.title}</b><div class="muted">${s.why}</div></div>`).join('')||'<div class="muted">—</div>'}
     </div>
-    <div class="card" style="border-color:var(--navy);background:var(--info);font-style:italic;line-height:1.5">
+
+    <div class="quote">
       «Αυτά γνωρίζουμε. Αυτά δεν γνωρίζουμε. Αυτά χρειάζονται απόδειξη. Αυτό είναι το επόμενο ασφαλές βήμα.»
+      <br><br>
+      DECLARED ≠ VERIFIED · OUTDATED ≠ CURRENT · BLOCKING GAP ≠ PROCEED
     </div>
   </div>
   <div class="foot"><button data-go="home" class="btn">Λίστα υποθέσεων</button></div>`;
 }
 
 function bind(){
-  document.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>{state.screen=b.dataset.go; if(b.dataset.go==='new') state.draft={}; render()});
-  document.querySelectorAll('[data-open]').forEach(b=>b.onclick=()=>{state.currentId=b.dataset.open; state.screen='case'; state.tab='overview'; render()});
+  document.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>{
+    state.screen=b.dataset.go;
+    if(b.dataset.go==='new') state.draft={};
+    render();
+  });
+  document.querySelectorAll('[data-open]').forEach(b=>b.onclick=()=>{
+    state.currentId=b.dataset.open; state.screen='case'; state.tab='overview'; render();
+  });
+  document.querySelectorAll('[data-demo]').forEach(b=>b.onclick=()=>{
+    const demo=DEMOS.find(x=>x.id===b.dataset.demo);
+    if(!demo) return;
+    const id=uid();
+    const now=Date.now();
+    state.cases.push({
+      id,
+      customer:demo.customer,
+      phone:demo.phone||'',
+      address:demo.address,
+      workType:demo.workType,
+      answers:{...demo.answers},
+      docs:(demo.docs||[]).map(x=>({...x})),
+      createdAt:now,
+      updatedAt:now
+    });
+    save();
+    state.currentId=id;
+    state.screen='case';
+    state.tab='overview';
+    toast('Demo υπόθεση φορτώθηκε');
+    render();
+  });
   document.querySelectorAll('[data-type]').forEach(b=>b.onclick=()=>{state.draft.workType=b.dataset.type; render()});
   document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{state.tab=b.dataset.tab; render()});
 
-  const c=document.getElementById('customer'); if(c) c.oninput=e=>{state.draft.customer=e.target.value; const ok=state.draft.customer&&state.draft.address&&state.draft.workType; const btn=document.querySelector('[data-create]'); if(btn){btn.disabled=!ok}};
-  const p=document.getElementById('phone'); if(p) p.oninput=e=>{state.draft.phone=e.target.value};
-  const a=document.getElementById('address'); if(a) a.oninput=e=>{state.draft.address=e.target.value; const ok=state.draft.customer&&state.draft.address&&state.draft.workType; const btn=document.querySelector('[data-create]'); if(btn){btn.disabled=!ok}};
+  const cust=document.getElementById('customer');
+  const phone=document.getElementById('phone');
+  const addr=document.getElementById('address');
+  const refreshCreate=()=>{
+    const ok=state.draft.customer&&state.draft.address&&state.draft.workType;
+    const btn=document.querySelector('[data-create]');
+    if(btn) btn.disabled=!ok;
+  };
+  if(cust) cust.oninput=e=>{state.draft.customer=e.target.value; refreshCreate()};
+  if(phone) phone.oninput=e=>{state.draft.phone=e.target.value};
+  if(addr) addr.oninput=e=>{state.draft.address=e.target.value; refreshCreate()};
 
   const create=document.querySelector('[data-create]');
   if(create) create.onclick=()=>{
     if(!(state.draft.customer&&state.draft.address&&state.draft.workType)) return;
-    const id=uid(); const now=Date.now();
+    const id=uid();
+    const now=Date.now();
     state.cases.push({
-      id, customer:state.draft.customer.trim(), phone:(state.draft.phone||'').trim(),
-      address:state.draft.address.trim(), workType:state.draft.workType,
-      answers:{}, docs:[], createdAt:now, updatedAt:now
+      id,
+      customer:state.draft.customer.trim(),
+      phone:(state.draft.phone||'').trim(),
+      address:state.draft.address.trim(),
+      workType:state.draft.workType,
+      answers:{},
+      docs:[],
+      createdAt:now,
+      updatedAt:now
     });
-    save(); state.currentId=id; state.qIndex=0; state.screen='intake'; state.draft={}; toast('Η υπόθεση αποθηκεύτηκε'); render();
+    save();
+    state.currentId=id;
+    state.qIndex=0;
+    state.screen='intake';
+    state.draft={};
+    toast('Η υπόθεση αποθηκεύτηκε');
+    render();
   };
 
   const ans=document.getElementById('ans');
-  if(ans) ans.oninput=e=>{ const c=cur(); if(!c) return; c.answers=c.answers||{}; c.answers[qs(c.workType)[state.qIndex].id]=e.target.value; c.updatedAt=Date.now(); save(); const btn=document.querySelector('[data-next-q]'); if(btn) btn.disabled=!e.target.value.trim();};
+  if(ans) ans.oninput=e=>{
+    const c=cur(); if(!c) return;
+    c.answers=c.answers||{};
+    c.answers[qs(c.workType)[state.qIndex].id]=e.target.value;
+    c.updatedAt=Date.now(); save();
+    const btn=document.querySelector('[data-next-q]');
+    if(btn) btn.disabled=!e.target.value.trim();
+  };
 
   document.querySelectorAll('[data-opt]').forEach(b=>b.onclick=()=>{
-    const c=cur(); if(!c) return; c.answers=c.answers||{}; c.answers[qs(c.workType)[state.qIndex].id]=b.dataset.opt; c.updatedAt=Date.now(); save(); render();
+    const c=cur(); if(!c) return;
+    c.answers=c.answers||{};
+    c.answers[qs(c.workType)[state.qIndex].id]=b.dataset.opt;
+    c.updatedAt=Date.now(); save(); render();
   });
 
   const nq=document.querySelector('[data-next-q]');
   if(nq) nq.onclick=()=>{
-    const c=cur(); if(!c) return; const list=qs(c.workType);
-    if(state.qIndex<list.length-1){state.qIndex++; render()} else {state.screen='case'; state.tab='overview'; toast('Φάκελος έτοιμος'); render()}
+    const c=cur(); if(!c) return;
+    const list=qs(c.workType);
+    if(state.qIndex<list.length-1){ state.qIndex++; render(); }
+    else { state.screen='case'; state.tab='overview'; toast('Φάκελος έτοιμος'); render(); }
   };
   const bq=document.querySelector('[data-back-q]');
-  if(bq) bq.onclick=()=>{ if(state.qIndex>0){state.qIndex--; render()} else state.screen='case', render() };
+  if(bq) bq.onclick=()=>{
+    if(state.qIndex>0){ state.qIndex--; render(); }
+    else { state.screen='case'; render(); }
+  };
 
   const fi=document.getElementById('fileInput');
   if(fi) fi.onchange=e=>{
@@ -406,11 +654,19 @@ function bind(){
       else if(/\.(jpe?g|png)$/i.test(f.name)) kind='Εικόνα';
       c.docs.push({name:f.name, kb:Math.max(1,Math.round(f.size/1024)), kind});
     });
-    c.updatedAt=Date.now(); save(); toast('Αρχεία προστέθηκαν στον φάκελο'); render();
+    c.updatedAt=Date.now(); save(); toast('Αρχεία στον φάκελο (προς έλεγχο)'); render();
   };
-  document.querySelectorAll('[data-rm]').forEach(b=>b.onclick=()=>{const c=cur(); if(!c) return; c.docs.splice(+b.dataset.rm,1); c.updatedAt=Date.now(); save(); render()});
+  document.querySelectorAll('[data-rm]').forEach(b=>b.onclick=()=>{
+    const c=cur(); if(!c) return;
+    c.docs.splice(+b.dataset.rm,1);
+    c.updatedAt=Date.now(); save(); render();
+  });
   const del=document.querySelector('[data-del]');
-  if(del) del.onclick=()=>{ if(!confirm('Διαγραφή υπόθεσης;')) return; state.cases=state.cases.filter(x=>x.id!==state.currentId); save(); state.currentId=null; state.screen='home'; render(); };
+  if(del) del.onclick=()=>{
+    if(!confirm('Διαγραφή υπόθεσης;')) return;
+    state.cases=state.cases.filter(x=>x.id!==state.currentId);
+    save(); state.currentId=null; state.screen='home'; render();
+  };
 }
 
 load();
