@@ -3,32 +3,30 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>AI Senior Engineer v2</title>
+<title>AI Senior Engineer — New Case Flow Fixed</title>
 <style>
 :root{--bg:#06111f;--bg2:#0a1730;--panel:#101c31;--line:#243653;--text:#eef4ff;--muted:#93a7c8;--blue:#4ea1ff;--cyan:#69e0ff;--green:#2ecc71;--yellow:#f4c542;--red:#ff5c7a;--chip:#182743;--shadow:0 22px 50px rgba(0,0,0,.35);--radius:18px}
 *{box-sizing:border-box}html,body{height:100%}body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;color:var(--text);background:linear-gradient(180deg,var(--bg),var(--bg2))}
-.shell{display:grid;grid-template-columns:280px 1fr 340px;min-height:100vh}
-.sidebar,.right{padding:20px;background:rgba(8,16,30,.92)}.sidebar{border-right:1px solid var(--line)}.right{border-left:1px solid var(--line)}.main{padding:20px}
+.shell{display:grid;grid-template-columns:280px 1fr 340px;min-height:100vh}.sidebar,.right{padding:20px;background:rgba(8,16,30,.92)}.sidebar{border-right:1px solid var(--line)}.right{border-left:1px solid var(--line)}.main{padding:20px}
 .brand{display:flex;gap:12px;align-items:center;margin-bottom:18px}.logo{width:46px;height:46px;border-radius:15px;background:linear-gradient(135deg,var(--blue),#8a67ff)}.brand h1{margin:0;font-size:16px}.brand p{margin:2px 0 0;color:var(--muted);font-size:12px}
 .nav{display:flex;flex-direction:column;gap:8px}.nav button,.tab,.btn{cursor:pointer}.nav button{width:100%;text-align:left;border:1px solid transparent;background:transparent;color:var(--text);padding:12px 14px;border-radius:14px;font-size:14px}.nav button.active,.nav button:hover{background:rgba(78,161,255,.12);border-color:rgba(78,161,255,.25)}
 .section,.panel,.modal{background:linear-gradient(180deg,rgba(16,28,49,.98),rgba(13,24,42,.98));border:1px solid rgba(36,54,83,.95);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;margin-bottom:18px}.section h2,.panel h2,.modal h2{margin:0;padding:16px 18px;border-bottom:1px solid rgba(36,54,83,.95);font-size:15px;background:rgba(255,255,255,.02)}.content{padding:18px}
 .hero{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;flex-wrap:wrap}.hero h3{margin:0;font-size:25px}.sub{color:var(--muted);font-size:13px;margin-top:6px;line-height:1.45}
-.pill{display:inline-flex;align-items:center;padding:7px 10px;border-radius:999px;background:rgba(24,39,67,.98);border:1px solid rgba(36,54,83,.95);font-size:12px}.pill.yellow{background:rgba(244,197,66,.12);border-color:rgba(244,197,66,.35);color:#ffe7a1}
+.pill{display:inline-flex;align-items:center;padding:7px 10px;border-radius:999px;background:rgba(24,39,67,.98);border:1px solid rgba(36,54,83,.95);font-size:12px}.pill.yellow{background:rgba(244,197,66,.12);border-color:rgba(244,197,66,.35);color:#ffe7a1}.pill.green{background:rgba(46,204,113,.12);border-color:rgba(46,204,113,.35);color:#bbf5d4}
 .grid-4,.grid-3,.grid-2{display:grid;gap:12px}.grid-4{grid-template-columns:repeat(4,1fr)}.grid-3{grid-template-columns:repeat(3,1fr)}.grid-2{grid-template-columns:repeat(2,1fr)}
 .metric{padding:16px;border-radius:16px;background:rgba(18,31,56,.98);border:1px solid rgba(36,54,83,.95)}.metric .label{font-size:12px;color:var(--muted)}.metric .value{font-size:22px;font-weight:800;margin-top:8px}.meter{height:8px;background:#213352;border-radius:999px;overflow:hidden;margin-top:12px}.meter>span{display:block;height:100%;background:linear-gradient(90deg,var(--blue),var(--cyan))}
 .chips{display:flex;flex-wrap:wrap;gap:8px}.chip{padding:7px 10px;border-radius:999px;background:var(--chip);border:1px solid rgba(36,54,83,.95);font-size:12px;color:#dbe7ff}
-.toolbar{display:flex;gap:10px;flex-wrap:wrap}.btn{border:none;border-radius:12px;padding:11px 14px;font-weight:700;color:#fff;background:linear-gradient(180deg,var(--blue),#2b7cff)}.btn.secondary{background:rgba(24,39,67,.98);border:1px solid rgba(36,54,83,.95)}
-.workspace-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}.tab{padding:10px 12px;border-radius:12px;background:rgba(24,39,67,.98);border:1px solid rgba(36,54,83,.95);font-size:13px;color:#dbe7ff}.tab.active{border-color:rgba(78,161,255,.45);background:rgba(78,161,255,.12)}
+.toolbar{display:flex;gap:10px;flex-wrap:wrap}.btn{border:none;border-radius:12px;padding:11px 14px;font-weight:700;color:#fff;background:linear-gradient(180deg,var(--blue),#2b7cff)}.btn.secondary{background:rgba(24,39,67,.98);border:1px solid rgba(36,54,83,.95)}.btn.good{background:linear-gradient(180deg,#32d97e,#1ea95d)}
 .list{list-style:none;padding:0;margin:0}.list li{padding:13px 0;border-bottom:1px solid rgba(36,54,83,.75)}.list li:last-child{border-bottom:none}.tiny{font-size:12px;color:var(--muted)}
 .doc{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}.doc strong{display:block;margin-bottom:4px}.badge{padding:5px 8px;border-radius:999px;font-size:12px;border:1px solid rgba(36,54,83,.95);background:rgba(24,39,67,.98)}.badge.green{background:rgba(46,204,113,.12);border-color:rgba(46,204,113,.35)}.badge.yellow{background:rgba(244,197,66,.12);border-color:rgba(244,197,66,.35)}.badge.red{background:rgba(255,92,122,.12);border-color:rgba(255,92,122,.35)}
-.step{display:flex;gap:12px;align-items:flex-start;margin-bottom:14px}.dot{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:rgba(24,39,67,.98);border:1px solid rgba(36,54,83,.95);font-size:12px;font-weight:800}.dot.active{background:rgba(78,161,255,.18);border-color:rgba(78,161,255,.4)}
+.field{margin-bottom:12px}.field label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px}.field input,.field textarea,.field select,.input input,.input textarea{width:100%;padding:12px 13px;border-radius:12px;border:1px solid rgba(36,54,83,.95);background:#091426;color:var(--text);outline:none}
 .chat{background:#0b1528;border:1px solid rgba(36,54,83,.95);border-radius:16px;padding:14px}.bubble{padding:11px 12px;border-radius:14px;margin-bottom:10px;font-size:13px;line-height:1.5}.bubble.ai{background:rgba(78,161,255,.08);border:1px solid rgba(78,161,255,.18)}.bubble.user{background:rgba(46,204,113,.08);border:1px solid rgba(46,204,113,.18)}
-.input{display:flex;gap:10px;margin-top:12px}.input input,.input textarea,.field input,.field textarea,.field select{width:100%;padding:12px 13px;border-radius:12px;border:1px solid rgba(36,54,83,.95);background:#091426;color:var(--text);outline:none}.field{margin-bottom:12px}.field label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px}
-.kanban{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}.col{background:#0c1629;border:1px solid rgba(36,54,83,.95);border-radius:16px;padding:12px;min-height:180px}.col h4{margin:0 0 10px;font-size:13px}.cardx{padding:11px;border:1px solid rgba(36,54,83,.95);border-radius:12px;background:rgba(17,28,49,.9);margin-bottom:10px;font-size:13px;line-height:1.4}
+.step{display:flex;gap:12px;align-items:flex-start;margin-bottom:14px}.dot{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:rgba(24,39,67,.98);border:1px solid rgba(36,54,83,.95);font-size:12px;font-weight:800}.dot.active{background:rgba(78,161,255,.18);border-color:rgba(78,161,255,.4)}
 .notice{padding:14px;border-radius:14px;border:1px solid rgba(244,197,66,.32);background:rgba(244,197,66,.08);color:#ffe7a1;line-height:1.55}.notice.red{border-color:rgba(255,92,122,.32);background:rgba(255,92,122,.08);color:#ffbdca}.notice.green{border-color:rgba(46,204,113,.32);background:rgba(46,204,113,.08);color:#bbf5d4}
+.workspace-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}.tab{padding:10px 12px;border-radius:12px;background:rgba(24,39,67,.98);border:1px solid rgba(36,54,83,.95);font-size:13px;color:#dbe7ff}.tab.active{border-color:rgba(78,161,255,.45);background:rgba(78,161,255,.12)}
 .timeline{list-style:none;padding:0;margin:0}.timeline li{padding:12px 0;border-bottom:1px solid rgba(36,54,83,.75)}.timeline li:last-child{border-bottom:none}
 .hidden{display:none!important}.sidebar .footer{margin-top:18px;padding-top:18px;border-top:1px solid rgba(36,54,83,.75)}
-.modal-backdrop{position:fixed;inset:0;background:rgba(2,6,12,.62);display:none;align-items:center;justify-content:center;padding:16px;z-index:30}.modal-backdrop.show{display:flex}.modal{width:min(820px,100%);max-height:90vh;overflow:auto}.modal .actions{display:flex;gap:10px;justify-content:flex-end;padding:0 18px 18px}
+.modal-backdrop{position:fixed;inset:0;background:rgba(2,6,12,.62);display:none;align-items:center;justify-content:center;padding:16px;z-index:30}.modal-backdrop.show{display:flex}.modal{width:min(900px,100%);max-height:90vh;overflow:auto}.modal .actions{display:flex;gap:10px;justify-content:flex-end;padding:0 18px 18px}
 .toast{position:fixed;right:20px;bottom:20px;background:rgba(16,28,49,.98);border:1px solid rgba(36,54,83,.95);box-shadow:var(--shadow);padding:14px 16px;border-radius:14px;min-width:280px;display:none;z-index:40}.toast.show{display:block}
 @media (max-width:1280px){.shell{grid-template-columns:260px 1fr}.right{grid-column:1/-1;position:static;height:auto}.grid-4,.grid-3,.kanban{grid-template-columns:1fr 1fr}}
 @media (max-width:860px){.shell{grid-template-columns:1fr}.sidebar{position:static;height:auto;border-right:none;border-bottom:1px solid var(--line)}.grid-4,.grid-3,.grid-2,.kanban{grid-template-columns:1fr}.main,.right,.sidebar{padding:16px}}
@@ -40,173 +38,83 @@
     <div class="brand"><div class="logo"></div><div><h1>AI Senior Engineer</h1><p>Case Operating System</p></div></div>
     <div class="nav">
       <button class="active" onclick="setView('dashboard', this)">Πίνακας / Dashboard</button>
-      <button onclick="setView('intake', this)">Είσοδος Πελάτη / Intake</button>
+      <button onclick="setView('newcase', this)">Νέα Υπόθεση / New Case</button>
+      <button onclick="setView('intake', this)">Επικοινωνία / Client</button>
       <button onclick="setView('docs', this)">Έγγραφα / Documents</button>
-      <button onclick="setView('guide', this)">Οδηγός / Guide</button>
       <button onclick="setView('field', this)">Αυτοψία / Field</button>
       <button onclick="setView('review', this)">Έλεγχος / Review</button>
       <button onclick="setView('completion', this)">Ολοκλήρωση / Completion</button>
-      <button onclick="setView('settings', this)">Πακέτα / Packs</button>
     </div>
-    <div class="section" style="margin-top:14px"><h2>Πυρήνας / Core</h2><div class="content"><div class="chips"><span class="chip">Υπόθεση first</span><span class="chip">Engineer first</span><span class="chip">Docs inform</span><span class="chip">Field confirms</span><span class="chip">AI suggests</span></div></div></div>
-    <div class="footer"><div class="tiny">Ενεργή υπόθεση / Active case</div><div style="font-weight:800;margin-top:6px" id="sideCaseName">Κωνσταντίνος Παπαδόπουλος</div><div class="tiny" id="sideCaseMeta">Ιωάννινα · ΗΤΚ + ΠΕΑ</div></div>
+    <div class="section" style="margin-top:14px"><h2>Κανόνας / Rule</h2><div class="content"><div class="notice green">Documents inform. Field confirms. Engineer decides.</div></div></div>
+    <div class="footer"><div class="tiny">Ενεργή υπόθεση / Active case</div><div style="font-weight:800;margin-top:6px" id="sideCaseName">—</div><div class="tiny" id="sideCaseMeta">—</div></div>
   </aside>
   <main class="main">
     <div id="view-dashboard" class="view">
-      <div class="section"><h2>Πίνακας / Dashboard</h2><div class="content"><div class="hero"><div><h3 id="caseName">Κωνσταντίνος Παπαδόπουλος</h3><div class="sub" id="caseMeta">Ιωάννινα · Ακίνητο από αποδοχή κληρονομιάς · ΗΤΚ + ΠΕΑ</div></div><div class="toolbar"><span class="pill yellow" id="caseState">Σε εξέλιξη / In progress</span><button class="btn secondary" onclick="openModal('case')">Νέα Υπόθεση</button><button class="btn secondary" onclick="openModal('contact')">Είσοδος Πελάτη</button><button class="btn" onclick="simulateNextStep()">Επόμενη ενέργεια</button></div></div>
-        <div class="grid-4" style="margin-top:16px"><div class="metric"><div class="label">Ολοκληρώθηκαν</div><div class="value" id="mDone">3</div><div class="meter"><span id="barDone" style="width:75%"></span></div></div><div class="metric"><div class="label">Έλεγχος</div><div class="value" id="mReview">1</div><div class="meter"><span id="barReview" style="width:25%;background:linear-gradient(90deg,var(--yellow),#ffd86c)"></span></div></div><div class="metric"><div class="label">Ανοιχτά</div><div class="value" id="mOpen">2</div><div class="meter"><span id="barOpen" style="width:50%;background:linear-gradient(90deg,var(--red),#ff8aa0)"></span></div></div><div class="metric"><div class="label">Επόμενο</div><div class="value" id="mNext">Αυτοψία</div><div class="meter"><span id="barNext" style="width:55%;background:linear-gradient(90deg,var(--cyan),#8beaff)"></span></div></div></div>
-        <div class="grid-2" style="margin-top:16px"><div class="section" style="margin:0"><h2>Σύνοψη / Summary</h2><div class="content"><div class="chips" id="summaryChips"></div><div style="margin-top:14px" class="notice" id="summaryNotice">Υπάρχει πιθανή ασυμφωνία εμβαδού.</div></div></div><div class="section" style="margin:0"><h2>Ροή / Workflow</h2><div class="content"><ul class="timeline" id="workflowList"></ul></div></div></div>
+      <div class="section"><h2>Dashboard</h2><div class="content"><div class="hero"><div><h3 id="dashTitle">Νέα Υπόθεση</h3><div class="sub" id="dashSub">Front door flow for case creation</div></div><div class="toolbar"><button class="btn secondary" onclick="startNewCase()">Νέα Υπόθεση</button><button class="btn secondary" onclick="setView('newcase', document.querySelector('.nav button:nth-child(2)'))">Άνοιγμα ροής</button></div></div>
+        <div class="grid-4" style="margin-top:16px"><div class="metric"><div class="label">Βήμα</div><div class="value" id="mStep">1/4</div><div class="meter"><span id="stepBar" style="width:25%"></span></div></div><div class="metric"><div class="label">Στοιχεία</div><div class="value" id="mData">0</div><div class="meter"><span id="dataBar" style="width:10%"></span></div></div><div class="metric"><div class="label">Έγγραφα</div><div class="value" id="mDocs">0</div><div class="meter"><span id="docsBar" style="width:10%;background:linear-gradient(90deg,var(--yellow),#ffd86c)"></span></div></div><div class="metric"><div class="label">Κατάσταση</div><div class="value" id="mState">Draft</div><div class="meter"><span id="stateBar" style="width:15%;background:linear-gradient(90deg,var(--red),#ff8aa0)"></span></div></div></div>
+        <div class="grid-2" style="margin-top:16px"><div class="section" style="margin:0"><h2>Τι κάνει</h2><div class="content"><ul class="list"><li>Ανοίγει μια πραγματική υπόθεση, όχι απλή κάρτα.</li><li>Δείχνει μόνο τα αναγκαία στοιχεία στην αρχή.</li><li>Οδηγεί τον μηχανικό σε προσωπική επικοινωνία με τον πελάτη.</li><li>Περνά μετά στη συλλογή εγγράφων και στη δημιουργία φακέλου.</li></ul></div></div><div class="section" style="margin:0"><h2>Επόμενο βήμα</h2><div class="content"><div class="notice green" id="nextStepBox">Πάτησε «Νέα Υπόθεση» για να ξεκινήσει η ροή.</div></div></div></div>
       </div></div>
-      <div class="grid-2"><div class="section"><h2>Οδηγός / Guide</h2><div class="content" id="guideBox"></div></div><div class="section"><h2>Έγγραφα / Documents</h2><div class="content"><ul class="list" id="docBox"></ul></div></div></div>
-      <div class="section"><h2>Χώρος Αυτοψίας / Field workspace</h2><div class="content"><div class="grid-2"><div><div class="notice green" id="nextActionBox"><strong>Επόμενη ασφαλής ενέργεια:</strong> Κάνε επιτόπια αυτοψία για να επιβεβαιώσεις το εμβαδόν ισογείου.</div><div style="margin-top:14px" class="workspace-tabs"><div class="tab active">Checklist</div><div class="tab">Measurements</div><div class="tab">Photos</div><div class="tab">Notes</div></div><ul class="list" id="checklistBox"></ul></div><div><div class="section" style="margin:0"><h2>Ροή αυτοψίας / Inspection feed</h2><div class="content"><div class="chat" id="fieldFeed"><div class="bubble ai">AI: Έλεγξε το πραγματικό εμβαδόν και σύγκρινέ το με τα σχέδια.</div><div class="bubble user">Μηχανικός / Engineer: Ξεκίνησα την αυτοψία.</div></div><div class="input"><textarea id="fieldNoteInput" rows="3" placeholder="Πρόσθεσε σημείωση..."></textarea><button class="btn" onclick="addFieldNote()">Προσθήκη</button></div></div></div></div></div></div>
+
+    <div id="view-newcase" class="view hidden">
+      <div class="section"><h2>Νέα Υπόθεση / New Case</h2><div class="content"><div class="notice green" id="newCaseHint">Πριν προχωρήσεις, επικοινώνησε προσωπικά με τον πελάτη.</div>
+        <div class="grid-2" style="margin-top:14px"><div><div class="field"><label>Πελάτης</label><input id="caseClient" placeholder="Άγνωστος / Γνωστός"></div><div class="field"><label>Τηλέφωνο</label><input id="casePhone" placeholder="Από γραμματεία, εφόσον υπάρχει"></div><div class="field"><label>Περιοχή</label><input id="caseArea" placeholder="Ιωάννινα"></div></div><div><div class="field"><label>Διεύθυνση</label><input id="caseAddress" placeholder="Άγνωστη μέχρι να δοθεί"></div><div class="field"><label>Τύπος εργασίας</label><select id="caseType"><option>ΗΤΚ</option><option>ΠΕΑ</option><option>ΗΤΚ + ΠΕΑ</option><option>Άλλο</option></select></div><div class="field"><label>Πηγή υπόθεσης</label><select id="caseSource"><option>Πελάτης</option><option>Γραμματεία</option><option>Άλλο</option></select></div></div></div>
+        <div class="toolbar"><button class="btn good" onclick="markContacted()">Επικοινώνησα με τον πελάτη</button><button class="btn secondary" onclick="autoFillSample()">Παράδειγμα</button></div>
+        <div id="contactBox" class="hidden" style="margin-top:16px">
+          <div class="section" style="margin:0"><h2>Επικοινωνία με Πελάτη / Client Communication</h2><div class="content"><div class="field"><label>Τι είπε ο πελάτης;</label><textarea id="clientSay" rows="5" placeholder="Γράψε ελεύθερα τι σου είπε ο πελάτης..."></textarea></div><div class="notice" id="recognitionBox">Το σύστημα θα αναγνωρίσει: ακίνητο, εργασία, έγγραφα, ανάγκη για αυτοψία.</div><div class="toolbar" style="margin-top:12px"><button class="btn" onclick="analyzeClientText()">Ανάλυση</button><button class="btn secondary" onclick="setView('docs', document.querySelector('.nav button:nth-child(4)'))">Μετάβαση στα έγγραφα</button></div></div></div>
+          <div class="grid-2" style="margin-top:14px"><div class="section" style="margin:0"><h2>Αναγνωρισμένα Στοιχεία</h2><div class="content"><div class="chips" id="recognizedChips"></div></div></div><div class="section" style="margin:0"><h2>Επόμενα Ερωτήματα</h2><div class="content" id="nextQuestions"><div class="tiny">Θα εμφανιστούν μόνο όσα χρειάζονται.</div></div></div></div>
+        </div>
+      </div></div>
     </div>
-    <div id="view-intake" class="view hidden"><div class="section"><h2>Είσοδος Πελάτη / Client Intake</h2><div class="content"><div class="grid-2"><div><div class="notice" id="intakeNotice">Δεν έχει καταγραφεί επικοινωνία.</div><div class="toolbar" style="margin-top:12px"><button class="btn" onclick="toggleIntakeForm()">Μίλησα με τον πελάτη</button><button class="btn secondary" onclick="prefillIntake()">Συμπλήρωση παραδείγματος</button></div><div id="intakeForm" class="hidden" style="margin-top:14px"><div class="field"><label>Ονοματεπώνυμο</label><input value="Κωνσταντίνος Παπαδόπουλος"></div><div class="field"><label>Τι χρειάζεστε;</label><input value="ΗΤΚ + ΠΕΑ"></div><div class="field"><label>Τι ζήτησε η συμβολαιογράφος;</label><textarea rows="4">Η συμβολαιογράφος ζητά ΗΤΚ και ΠΕΑ για την ολοκλήρωση της αποδοχής κληρονομιάς.</textarea></div></div></div><div><div class="section" style="margin:0"><h2>Στοχευμένες ερωτήσεις</h2><div class="content"><div class="step"><div class="dot">1</div><div><strong>Καθορισμός υπόθεσης</strong><div class="tiny">Πελάτης, ακίνητο, πόλη, αίτημα.</div></div></div><div class="step"><div class="dot">2</div><div><strong>Ζητούμενα</strong><div class="tiny">Only the relevant questions appear.</div></div></div><div class="step"><div class="dot active">3</div><div><strong>Διαθέσιμα έγγραφα</strong><div class="tiny">E9, title, topographic, legalization.</div></div></div><div class="step"><div class="dot">4</div><div><strong>Διαδρομή πεδίου</strong><div class="tiny">Inspection only when needed.</div></div></div></div></div></div></div></div>
+
+    <div id="view-intake" class="view hidden">
+      <div class="section"><h2>Επικοινωνία / Client</h2><div class="content"><div class="notice">Guide Mode ή Chat Mode. Μία συνομιλία μπορεί να γίνει δομημένα ή φυσικά.</div><div class="grid-2" style="margin-top:14px"><div><div class="section" style="margin:0"><h2>Guide Mode</h2><div class="content" id="guideModeBox"></div></div></div><div><div class="section" style="margin:0"><h2>Chat Mode</h2><div class="content"><div class="chat" id="clientChat"><div class="bubble ai">Senior: Πες μου τι σου είπε ο πελάτης.</div></div><div class="input"><textarea id="chatInput" rows="3" placeholder="Περιέγραψε την επικοινωνία..."></textarea></div><div class="toolbar" style="margin-top:12px"><button class="btn" onclick="submitChat()">Υποβολή</button><button class="btn secondary" onclick="setView('docs', document.querySelector('.nav button:nth-child(4)'))">Συνέχεια</button></div></div></div></div></div></div>
     </div>
-    <div id="view-docs" class="view hidden"><div class="section"><h2>Έγγραφα / Documents</h2><div class="content"><div class="toolbar"><button class="btn secondary" onclick="addDocument()">Πρόσθεσε έγγραφο</button><button class="btn secondary" onclick="toggleConflict()">Προσομοίωση ασυμφωνίας</button></div><div class="grid-2" style="margin-top:14px"><div><ul class="list" id="docsList"></ul></div><div><div class="notice" id="docsNotice"><strong>Κανόνας:</strong> Τα έγγραφα ενημερώνουν, η αυτοψία επιβεβαιώνει.</div><div style="margin-top:14px" class="chat"><div class="bubble ai">AI: Υπάρχει πιθανή ασυμφωνία εμβαδού μεταξύ τίτλου, Ε9 και σχεδίου.</div><div class="bubble user">Μηχανικός / Engineer: Θα το επιβεβαιώσω στην αυτοψία.</div></div></div></div></div></div></div>
+
+    <div id="view-docs" class="view hidden">
+      <div class="section"><h2>Έγγραφα / Documents</h2><div class="content"><div class="notice green">Έγγραφα που έχουμε. Το σύστημα θα τα συσχετίσει χωρίς να τα θεωρεί αυτόματα αλήθεια.</div><div class="grid-2" style="margin-top:14px"><div><ul class="list" id="docsList"></ul></div><div><div class="section" style="margin:0"><h2>Τι δείχνει το σύστημα</h2><div class="content"><div class="notice" id="docsSummary">Το σύστημα εντόπισε στοιχεία που μπορούν να χρησιμοποιηθούν για την υπόθεση. Θα χρειαστούν επιβεβαίωση όπου απαιτείται κατά την αυτοψία.</div><div class="toolbar" style="margin-top:12px"><button class="btn" onclick="createCaseFolder()">Δημιουργία πραγματικού φακέλου</button><button class="btn secondary" onclick="setView('field', document.querySelector('.nav button:nth-child(5)'))">Προς αυτοψία</button></div></div></div></div></div></div></div>
     </div>
-    <div id="view-guide" class="view hidden"><div class="section"><h2>Οδηγός / Guide</h2><div class="content"><div class="notice green">Ο οδηγός προσαρμόζεται προοδευτικά.</div><div style="margin-top:16px" class="kanban" id="guideKanban"></div></div></div></div>
-    <div id="view-field" class="view hidden"><div class="section"><h2>Αυτοψία / Field</h2><div class="content"><div class="grid-2"><div><div class="workspace-tabs"><div class="tab active">Checklist</div><div class="tab">Measurements</div><div class="tab">Photos</div><div class="tab">Notes</div></div><ul class="list"><li>☐ Εξωτερική κατάσταση</li><li>☐ Πρόσβαση και θέση</li><li>☐ Χρήση ισογείου</li><li>☐ Βοηθητικοί χώροι</li><li>☐ Ανοίγματα</li><li>☐ Κρίσιμες μετρήσεις</li><li>☐ Ορατές αποκλίσεις</li><li>☐ Φωτογραφικό υλικό</li></ul><div class="toolbar" style="margin-top:14px"><button class="btn" onclick="markFieldComplete()">Ολοκλήρωση αυτοψίας</button><button class="btn secondary" onclick="fieldPhoto()">Προσθήκη φωτογραφίας</button></div></div><div><div class="section" style="margin:0"><h2>Ροή αυτοψίας / Inspection feed</h2><div class="content"><div class="chat" id="fieldStream"><div class="bubble ai">AI: Επιβεβαίωσε το εμβαδόν ισογείου.</div><div class="bubble user">Μηχανικός / Engineer: Ξεκινώ την επιτόπια καταγραφή.</div></div></div></div></div></div></div>
+
+    <div id="view-field" class="view hidden">
+      <div class="section"><h2>Αυτοψία / Field</h2><div class="content"><div class="notice green">Τι πρέπει να ελέγξω τώρα;</div><div class="workspace-tabs" style="margin-top:14px"><div class="tab active">Checklist</div><div class="tab">Φωτογραφίες</div><div class="tab">Μετρήσεις</div><div class="tab">Σημειώσεις</div></div><div class="grid-2"><div><ul class="list"><li>☐ Κτίριο / χώροι</li><li>☐ Διαστάσεις</li><li>☐ Χρήσεις</li><li>☐ Όψεις / πραγματική κατάσταση</li><li>☐ Φωτογραφίες</li><li>☐ Παρατηρήσεις</li></ul><div class="toolbar" style="margin-top:12px"><button class="btn" onclick="addPhotoNote()">[Φωτογραφία]</button><button class="btn" onclick="addMeasureNote()">[Μέτρηση]</button><button class="btn secondary" onclick="addObservationNote()">[Σημείωση]</button></div></div><div><div class="section" style="margin:0"><h2>Field Feed</h2><div class="content"><div class="chat" id="fieldFeed"><div class="bubble ai">Senior: Εστίασε μόνο στα κρίσιμα στοιχεία που χρειάζονται επιβεβαίωση.</div></div><div class="field"><label>Σημειώσεις αυτοψίας</label><textarea id="fieldNotes" rows="10" placeholder="Γράψε παρατηρήσεις, ευρήματα, εκκρεμότητες..."></textarea></div><div class="toolbar"><button class="btn good" onclick="saveFieldNotes()">Αποθήκευση σημειώσεων</button><button class="btn secondary" onclick="setView('review', document.querySelector('.nav button:nth-child(6)'))">Προς έλεγχο</button></div></div></div></div></div></div>
     </div>
-    <div id="view-review" class="view hidden"><div class="section"><h2>Έλεγχος / Review</h2><div class="content"><div class="grid-2"><div><div class="notice red"><strong>Κρίσιμο εύρημα:</strong> Η ασυμφωνία εμβαδού παραμένει ανοιχτή.</div><div class="field" style="margin-top:14px"><label>Απόφαση μηχανικού</label><textarea id="decisionBox" rows="6" placeholder="Γράψε την τεχνική απόφαση..."></textarea></div><div class="toolbar"><button class="btn" onclick="resolveFinding()">Επίλυση</button><button class="btn secondary" onclick="overrideGate()">Παράκαμψη</button></div></div><div><div class="section" style="margin:0"><h2>Audit trail</h2><div class="content"><ul class="timeline" id="auditTrail"><li>Υπόθεση δημιουργήθηκε</li><li>Έγγραφα εισήχθησαν</li><li>Η αυτοψία ξεκίνησε</li><li>Εντοπίστηκε ασυμφωνία</li><li>Απαιτείται έλεγχος</li></ul></div></div></div></div></div></div>
+
+    <div id="view-review" class="view hidden">
+      <div class="section"><h2>Έλεγχος / Review</h2><div class="content"><div class="grid-2"><div><div class="notice red" id="conflictBox">Αν υπάρχει ασυμφωνία, δεν αποφασίζει το σύστημα. Ζητά τον μηχανικό να ελέγξει.</div><div class="field" style="margin-top:14px"><label>Απόφαση μηχανικού</label><textarea id="decisionBox" rows="6" placeholder="Γράψε την τεχνική απόφαση..."></textarea></div><div class="toolbar"><button class="btn" onclick="resolveCase()">Επίλυση</button><button class="btn secondary" onclick="flagConflict()">Ασυμφωνία</button></div></div><div><div class="section" style="margin:0"><h2>Audit trail</h2><div class="content"><ul class="timeline" id="auditTrail"><li>Υπόθεση δημιουργήθηκε</li><li>Προσωπική επικοινωνία καταγράφηκε</li><li>Έγγραφα συλλέχθηκαν</li><li>Αυτοψία ολοκληρώθηκε</li></ul></div></div></div></div></div></div>
     </div>
-    <div id="view-completion" class="view hidden"><div class="section"><h2>Ολοκλήρωση / Completion</h2><div class="content"><div class="notice green"><strong>Σύνοψη:</strong> Δείξε τι ολοκληρώθηκε, τι ελέγχθηκε, τι λύθηκε και τι εκδόθηκε.</div><div class="grid-2" style="margin-top:14px"><div><ul class="list"><li>☐ Συλλογή εγγράφων</li><li>☐ Ολοκλήρωση αυτοψίας</li><li>☐ Έλεγχος ασυμφωνιών</li><li>☐ Απόφαση μηχανικού</li><li>☐ Audit trail πλήρες</li></ul></div><div><div class="chat"><div class="bubble ai">AI: Η υπόθεση μπορεί να ολοκληρωθεί μόνο όταν περάσουν όλα τα gates.</div><div class="bubble user">Μηχανικός / Engineer: Θα κλείσω την υπόθεση μόλις λυθεί το ανοικτό ζήτημα.</div></div><div class="toolbar" style="margin-top:14px"><button class="btn" onclick="finalizeCase()">Οριστική ολοκλήρωση</button><button class="btn secondary" onclick="setView('dashboard', document.querySelector('.nav button.active'))">Πίσω</button></div></div></div></div></div>
+
+    <div id="view-completion" class="view hidden">
+      <div class="section"><h2>Ολοκλήρωση / Completion</h2><div class="content"><div class="notice green">Η υπόθεση μπορεί να κλείσει μόνο όταν τα απαραίτητα βήματα έχουν περάσει.</div><div class="grid-2" style="margin-top:14px"><div><ul class="list"><li>☐ Συλλογή εγγράφων</li><li>☐ Καταγραφή επικοινωνίας</li><li>☐ Αυτοψία</li><li>☐ Έλεγχος ασυμφωνιών</li><li>☐ Decision + audit</li></ul></div><div><div class="chat"><div class="bubble ai">AI Senior: Ready for completion only when gates pass.</div><div class="bubble user">Engineer: Κλείνω την υπόθεση μόλις λυθούν τα ανοικτά.</div></div><div class="toolbar" style="margin-top:12px"><button class="btn" onclick="finalizeCase()">Οριστική ολοκλήρωση</button><button class="btn secondary" onclick="setView('dashboard', document.querySelector('.nav button.active'))">Πίσω</button></div></div></div></div></div>
     </div>
-    <div id="view-settings" class="view hidden"><div class="section"><h2>Πακέτα Ροών / Workflow Packs</h2><div class="content"><div class="notice">Η μηχανή είναι παγωμένη μέχρι ο pilot του HTK να αποδείξει το workflow.</div><div style="margin-top:14px" class="grid-3"><div class="cardx"><strong>ΗΤΚ / HTK</strong><div class="tiny">Ενεργό pilot workflow</div></div><div class="cardx"><strong>ΠΕΑ / PEA</strong><div class="tiny">Κλειδωμένο μέχρι απόδειξη</div></div><div class="cardx"><strong>Τοπογραφικό / Topographic</strong><div class="tiny">Κλειδωμένο μέχρι απόδειξη</div></div><div class="cardx"><strong>Οικοδομική Άδεια / Permit</strong><div class="tiny">Κλειδωμένο μέχρι απόδειξη</div></div><div class="cardx"><strong>Τακτοποίηση / Legalization</strong><div class="tiny">Κλειδωμένο μέχρι απόδειξη</div></div><div class="cardx"><strong>Due Diligence</strong><div class="tiny">Κλειδωμένο μέχρι απόδειξη</div></div></div></div></div></div>
   </main>
   <aside class="right">
-    <div class="panel"><h2>AI Senior</h2><div class="content"><div class="chat" id="aiFeed"><div class="bubble ai">Από τα τρέχοντα στοιχεία υπάρχει πιθανή ασυμφωνία εμβαδού. Συνιστώ επιβεβαίωση του εμβαδού ισογείου.</div><div class="bubble ai">Αυτό είναι μόνο πρόταση. Η τελική απόφαση παραμένει στον μηχανικό.</div></div><div class="input"><input id="aiPrompt" placeholder="Ρώτησε / Ask the AI Senior..."><button class="btn" onclick="askAI()">Αποστολή</button></div></div></div>
-    <div class="panel"><h2>Κατάσταση Ροής / State</h2><div class="content"><ul class="timeline" id="wfState"><li><strong>ΕΙΣΟΔΟΣ / INTAKE</strong> · Ολοκληρώθηκε</li><li><strong>ΕΓΓΡΑΦΑ / DOCS</strong> · Ολοκληρώθηκαν</li><li><strong>ΑΥΤΟΨΙΑ / FIELD</strong> · Τρέχουσα</li><li><strong>ΕΛΕΓΧΟΣ / REVIEW</strong> · Κλειδωμένος</li><li><strong>ΟΛΟΚΛΗΡΩΣΗ / COMPLETE</strong> · Κλειδωμένη</li></ul></div></div>
-    <div class="panel"><h2>Κανόνες / Rules</h2><div class="content"><ul class="list"><li>Συλλογή απαραίτητων εγγράφων</li><li>Ολοκλήρωση αυτοψίας</li><li>Έλεγχος ασυμφωνιών</li><li>Απόφαση μηχανικού</li><li>Audit trail πλήρες</li></ul></div></div>
+    <div class="panel"><h2>Senior Guidance</h2><div class="content"><div class="chat" id="seniorFeed"><div class="bubble ai">Αρχική καθοδήγηση: δημιούργησε υπόθεση, μίλησε με τον πελάτη, μάζεψε έγγραφα, μετά κάνε αυτοψία.</div></div><div class="input"><input id="seniorPrompt" placeholder="Ρώτησε τον Senior..."><button class="btn" onclick="askSenior()">Αποστολή</button></div></div></div>
+    <div class="panel"><h2>Κατάσταση Ροής</h2><div class="content"><ul class="timeline" id="wfState"><li><strong>ΝΕΑ ΥΠΟΘΕΣΗ</strong> · Τρέχουσα</li><li><strong>ΕΠΙΚΟΙΝΩΝΙΑ</strong> · Κλειδώνεται μετά το button</li><li><strong>ΕΓΓΡΑΦΑ</strong> · Μετά την επικοινωνία</li><li><strong>ΑΥΤΟΨΙΑ</strong> · Μετά τα έγγραφα</li><li><strong>ΕΛΕΓΧΟΣ</strong> · Μετά την αυτοψία</li></ul></div></div>
+    <div class="panel"><h2>Κανόνες</h2><div class="content"><ul class="list"><li>Case-first UX</li><li>Engineer remains authority</li><li>Documents inform</li><li>Field confirms</li><li>No silent decisions</li></ul></div></div>
   </aside>
 </div>
 <div id="modalBackdrop" class="modal-backdrop" onclick="closeModal(event)"><div class="modal" id="genericModal" onclick="event.stopPropagation()"></div></div><div id="toast" class="toast"></div>
 <script>
-const views=['dashboard','intake','docs','guide','field','review','completion','settings']
-const sample={name:'Κωνσταντίνος Παπαδόπουλος / Konstantinos Papadopoulos',meta:'Ιωάννινα / Ioannina · Ακίνητο από αποδοχή κληρονομιάς · ΗΤΚ + ΠΕΑ',done:3,review:1,open:2,summary:['Μνήμη ακινήτου / Property memory','Απαιτείται αυτοψία / Field required','Η ολοκλήρωση κλειδωμένη / Completion blocked'],notice:'Πιθανή ασυμφωνία εμβαδού. Τα έγγραφα ενημερώνουν, αλλά η αυτοψία επιβεβαιώνει.',docs:[['Τίτλος / Συμβόλαιο','Εισήχθη / Uploaded','Έκδοση 1 · Archived versions preserved'],['Τοπογραφικό / Topographic','Εισήχθη / Uploaded','Area needs field confirmation'],['Ε9 / E9','Εισήχθη / Uploaded','Potential conflict with field data'],['Νομιμοποιήσεις / Legalization','Θέλει έλεγχο / Needs review','Check scope and coverage']],guide:[['Επικοινωνία / Communication','Επιβεβαίωσε τον σκοπό και τα απαιτούμενα έγγραφα.'],['Έγγραφα / Documents','Εισήγαγε τίτλο, Ε9, τοπογραφικό και νομιμοποιήσεις.'],['Αυτοψία / Field','Μέτρησε, φωτογράφισε, επιβεβαίωσε πραγματική κατάσταση.'],['Έλεγχος / Review','Εξέτασε ασυμφωνίες και αν μπορεί να προχωρήσει.'],['Ολοκλήρωση / Completion','Τελικό παραδοτέο και audit trail.']],checklist:['☐ Εξωτερική κατάσταση','☐ Πρόσβαση και θέση','☐ Χρήση ισογείου','☐ Βοηθητικοί χώροι','☐ Ανοίγματα','☐ Κρίσιμες μετρήσεις','☐ Ορατές αποκλίσεις','☐ Φωτογραφικό υλικό'],nextAction:'Κάνε επιτόπια αυτοψία για να επιβεβαιώσεις το εμβαδόν.',ai:'Από τα τρέχοντα στοιχεία υπάρχει πιθανή ασυμφωνία εμβαδού.'}
-
-function setView(name, btn){
-  views.forEach(v=>document.getElementById('view-'+v).classList.toggle('hidden',v!==name))
-  document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'))
-  if(btn) btn.classList.add('active')
-}
-
-function paint(){
-  document.getElementById('sideCaseName').textContent=sample.name
-  document.getElementById('sideCaseMeta').textContent='Ιωάννινα / Ioannina · ΗΤΚ + ΠΕΑ'
-  document.getElementById('caseName').textContent=sample.name
-  document.getElementById('caseMeta').textContent=sample.meta
-  document.getElementById('mDone').textContent=sample.done
-  document.getElementById('mReview').textContent=sample.review
-  document.getElementById('mOpen').textContent=sample.open
-  document.getElementById('summaryChips').innerHTML=sample.summary.map(x=>`<span class="chip">${x}</span>`).join('')
-  document.getElementById('summaryNotice').textContent=sample.notice
-  document.getElementById('nextActionBox').innerHTML='<strong>Επόμενη ασφαλής ενέργεια:</strong> '+sample.nextAction
-
-  document.getElementById('docsList').innerHTML=sample.docs.map(d=>`<li><div class="doc"><div><strong>${d[0]}</strong><div class="tiny">${d[2]}</div></div><span class="badge ${/Εισήχθη|Uploaded/.test(d[1])?'green':'yellow'}">${d[1]}</span></div></li>`).join('')
-  document.getElementById('docBox').innerHTML=sample.docs.map(d=>`<li><div class="doc"><div><strong>${d[0]}</strong><div class="tiny">${d[2]}</div></div><span class="badge ${/Εισήχθη|Uploaded/.test(d[1])?'green':'yellow'}">${d[1]}</span></div></li>`).join('')
-
-  document.getElementById('guideBox').innerHTML=sample.guide.map((g,i)=>`<div class="step"><div class="dot ${i===2?'active':''}">${i+1}</div><div><strong>${g[0]}</strong><div class="tiny">${g[1]}</div></div></div>`).join('')
-  document.getElementById('guideKanban').innerHTML=[
-    ['ΕΙΣΑΓΩΓΗ / INBOX','Στοιχεία πελάτη / ακινήτου / αιτήματος'],
-    ['ΕΓΓΡΑΦΑ / DOCS','Εισαγωγή και ανάγνωση εγγράφων'],
-    ['ΠΕΔΙΟ / FIELD','Αυτοψία, φωτογραφίες, μετρήσεις'],
-    ['ΕΛΕΓΧΟΣ / REVIEW','Ασυμφωνίες, ευρήματα, αποφάσεις'],
-    ['ΟΛΟΚΛΗΡΩΣΗ / COMPLETE','Παραδοτέο και audit']
-  ].map((x,i)=>`<div class="col"><h4>${x[0]}</h4><div class="cardx">${x[1]}</div><div class="cardx">Κατάσταση: ${i<2?'done':i===2?'current':i===3?'blocked':'locked'}</div></div>`).join('')
-
-  document.getElementById('checklistBox').innerHTML=sample.checklist.map(x=>`<li>${x}</li>`).join('')
-  document.getElementById('aiFeed').innerHTML=`<div class="bubble ai">${sample.ai}</div><div class="bubble ai">Αυτό είναι μόνο πρόταση. Η τελική απόφαση παραμένει στον μηχανικό.</div>`
-  document.getElementById('workflowList').innerHTML='<li><strong>ΕΙΣΟΔΟΣ / INTAKE</strong> · Ολοκληρώθηκε</li><li><strong>ΕΓΓΡΑΦΑ / DOCS</strong> · Ολοκληρώθηκαν</li><li><strong>ΑΥΤΟΨΙΑ / FIELD</strong> · Τρέχουσα</li><li><strong>ΕΛΕΓΧΟΣ / REVIEW</strong> · Κλειδωμένος</li><li><strong>ΟΛΟΚΛΗΡΩΣΗ / COMPLETE</strong> · Κλειδωμένη</li>'
-}
-
-function toast(msg){
-  const t=document.getElementById('toast')
-  t.textContent=msg
-  t.classList.add('show')
-  setTimeout(()=>t.classList.remove('show'),2200)
-}
-
-function openModal(kind){
-  document.getElementById('modalBackdrop').classList.add('show')
-  document.getElementById('genericModal').innerHTML=kind==='case' ? `
-    <h2>Νέα Υπόθεση</h2>
-    <div class="content">
-      <div class="grid-2">
-        <div class="field"><label>Ονοματεπώνυμο</label><input value="Κωνσταντίνος Παπαδόπουλος"></div>
-        <div class="field"><label>Πόλη</label><input value="Ιωάννινα"></div>
-        <div class="field"><label>Είδος υπόθεσης</label><select><option>Ακίνητο από αποδοχή κληρονομιάς</option><option>Τοπογραφικό</option><option>ΗΤΚ</option><option>ΠΕΑ</option></select></div>
-        <div class="field"><label>Ζητούμενο workflow</label><input value="ΗΤΚ + ΠΕΑ"></div>
-      </div>
-      <div class="notice green">Δημιουργεί νέο φάκελο και ξεκινά τον οδηγό.</div>
-    </div>
-    <div class="actions"><button class="btn secondary" onclick="closeModal()">Κλείσιμο</button><button class="btn" onclick="toast('New case created');closeModal()">Δημιουργία</button></div>
-  ` : `
-    <h2>Είσοδος Πελάτη</h2>
-    <div class="content">
-      <div class="notice">Δεν έχει καταγραφεί επικοινωνία.</div>
-      <div style="margin-top:14px" class="field"><label>Τι χρειάζεστε;</label><input value="ΗΤΚ + ΠΕΑ"></div>
-      <div class="field"><label>Τι ζήτησε η συμβολαιογράφος;</label><textarea rows="5">Η συμβολαιογράφος ζητά ΗΤΚ και ΠΕΑ για την ολοκλήρωση της αποδοχής κληρονομιάς.</textarea></div>
-    </div>
-    <div class="actions"><button class="btn secondary" onclick="closeModal()">Κλείσιμο</button><button class="btn" onclick="toast('Intake saved');closeModal()">Αποθήκευση</button></div>
-  `
-}
-
-function closeModal(e){
-  if(e && e.target!==document.getElementById('modalBackdrop')) return
-  document.getElementById('modalBackdrop').classList.remove('show')
-}
-
-function addDocument(){toast('Document uploaded')}
-function toggleConflict(){
-  document.getElementById('docsNotice').className='notice red'
-  document.getElementById('docsNotice').innerHTML='<strong>Εντοπίστηκε ασυμφωνία:</strong> Νέα απόκλιση επισημάνθηκε.'
-  toast('Conflict detected')
-}
-function addFieldNote(){
-  const t=document.getElementById('fieldNoteInput')
-  if(!t.value.trim()) return
-  document.getElementById('fieldFeed').insertAdjacentHTML('beforeend',`<div class="bubble user">Μηχανικός / Engineer: ${t.value}</div>`)
-  t.value=''
-  toast('Field note added')
-}
-function fieldPhoto(){
-  document.getElementById('fieldFeed').insertAdjacentHTML('beforeend','<div class="bubble user">Μηχανικός / Engineer: Προστέθηκε φωτογραφία στο ενεργό σημείο αυτοψίας.</div>')
-  toast('Photo added')
-}
-function markFieldComplete(){
-  document.getElementById('fieldFeed').insertAdjacentHTML('beforeend','<div class="bubble ai">AI: Field inspection marked complete.</div>')
-  document.getElementById('workflowList').innerHTML='<li><strong>ΕΙΣΟΔΟΣ / INTAKE</strong> · Ολοκληρώθηκε</li><li><strong>ΕΓΓΡΑΦΑ / DOCS</strong> · Ολοκληρώθηκαν</li><li><strong>ΑΥΤΟΨΙΑ / FIELD</strong> · Ολοκληρώθηκε</li><li><strong>ΕΛΕΓΧΟΣ / REVIEW</strong> · Τρέχων</li><li><strong>ΟΛΟΚΛΗΡΩΣΗ / COMPLETE</strong> · Κλειδωμένη</li>'
-  toast('Field marked complete')
-}
-function resolveFinding(){
-  document.getElementById('auditTrail').insertAdjacentHTML('beforeend','<li>Καταχωρήθηκε απόφαση μηχανικού</li>')
-  document.getElementById('workflowList').innerHTML='<li><strong>ΕΙΣΟΔΟΣ / INTAKE</strong> · Ολοκληρώθηκε</li><li><strong>ΕΓΓΡΑΦΑ / DOCS</strong> · Ολοκληρώθηκαν</li><li><strong>ΑΥΤΟΨΙΑ / FIELD</strong> · Ολοκληρώθηκε</li><li><strong>ΕΛΕΓΧΟΣ / REVIEW</strong> · Λύθηκε</li><li><strong>ΟΛΟΚΛΗΡΩΣΗ / COMPLETE</strong> · Έτοιμη</li>'
-  document.getElementById('summaryNotice').className='notice green'
-  document.getElementById('summaryNotice').textContent='Το κρίσιμο ζήτημα λύθηκε.'
-  toast('Conflict resolved')
-}
-function overrideGate(){toast('Override requires reason')}
-function askAI(){
-  const p=document.getElementById('aiPrompt')
-  if(!p.value.trim()) return
-  document.getElementById('aiFeed').insertAdjacentHTML('afterbegin',`<div class="bubble user">Μηχανικός / Engineer: ${p.value}</div><div class="bubble ai">AI: Κατανοητό. Θα δώσω μόνο δομημένη πρόταση.</div>`)
-  p.value=''
-  toast('AI responded')
-}
-function finalizeCase(){
-  document.getElementById('summaryNotice').className='notice green'
-  document.getElementById('summaryNotice').textContent='Η υπόθεση ολοκληρώθηκε και αρχειοθετήθηκε.'
-  document.getElementById('workflowList').innerHTML='<li><strong>ΕΙΣΟΔΟΣ / INTAKE</strong> · Ολοκληρώθηκε</li><li><strong>ΕΓΓΡΑΦΑ / DOCS</strong> · Ολοκληρώθηκαν</li><li><strong>ΑΥΤΟΨΙΑ / FIELD</strong> · Ολοκληρώθηκε</li><li><strong>ΕΛΕΓΧΟΣ / REVIEW</strong> · Ολοκληρώθηκε</li><li><strong>ΟΛΟΚΛΗΡΩΣΗ / COMPLETE</strong> · Ολοκληρώθηκε</li>'
-  toast('Case finalized')
-}
-function simulateNextStep(){setView('field', document.querySelector('.nav button.active'))}
-function prefillIntake(){document.getElementById('intakeForm').classList.remove('hidden');toast('Sample intake filled')}
-function toggleIntakeForm(){
-  document.getElementById('intakeForm').classList.remove('hidden')
-  document.getElementById('intakeNotice').className='notice green'
-  document.getElementById('intakeNotice').textContent='Καταγράφηκε επικοινωνία.'
-}
-window.addEventListener('DOMContentLoaded',paint)
+const state={step:1,contacted:false,client:{name:'',phone:'',area:'',address:'',type:'HTK',source:'Πελάτης'},recognized:[],caseFolder:false,docs:[['Ε9','—'],['Τοπογραφικό','—'],['Οικοδομική άδεια','—'],['Αποδοχή κληρονομιάς','—'],['Νομιμοποίηση','—'],['ΠΕΑ','—']],audit:['Υπόθεση δημιουργήθηκε'],fieldNotes:''}
+const views=['dashboard','newcase','intake','docs','field','review','completion']
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200)}
+function setView(name, btn){views.forEach(v=>document.getElementById('view-'+v).classList.toggle('hidden',v!==name));document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));if(btn)btn.classList.add('active')}
+function render(){document.getElementById('sideCaseName').textContent=state.client.name||'—';document.getElementById('sideCaseMeta').textContent=(state.client.area||'—')+' · '+(state.client.type||'—');document.getElementById('mStep').textContent=state.step+'/4';document.getElementById('stepBar').style.width=(state.step*25)+'%';document.getElementById('mData').textContent=[state.client.name,state.client.phone,state.client.area,state.client.address].filter(Boolean).length;document.getElementById('dataBar').style.width=Math.min(100,([state.client.name,state.client.phone,state.client.area,state.client.address].filter(Boolean).length*25))+'%';document.getElementById('mDocs').textContent=state.docs.filter(d=>d[1]==='✓').length;document.getElementById('docsBar').style.width=(state.docs.filter(d=>d[1]==='✓').length*15)+'%';document.getElementById('mState').textContent=state.caseFolder?'Folder':'Draft';document.getElementById('stateBar').style.width=state.caseFolder?'80%':'15%';document.getElementById('recognizedChips')&& (document.getElementById('recognizedChips').innerHTML=state.recognized.map(x=>`<span class="chip">${x}</span>`).join('')||'<span class="tiny">Ακόμη δεν έχει αναγνωριστεί περιεχόμενο.</span>');document.getElementById('docsList').innerHTML=state.docs.map(([name,status])=>`<li><div class="doc"><div><strong>${name}</strong><div class="tiny">Έγγραφο υπό συλλογή / ready to use</div></div><span class="badge ${status==='✓'?'green':'yellow'}">${status}</span></div></li>`).join('');document.getElementById('guideModeBox').innerHTML=`<div class="step"><div class="dot ${state.step===1?'active':''}">1</div><div><strong>Νέα Υπόθεση</strong><div class="tiny">Στοιχεία που έχουμε ήδη + οδηγία για προσωπική επικοινωνία.</div></div></div><div class="step"><div class="dot ${state.step===2?'active':''}">2</div><div><strong>Επικοινωνία</strong><div class="tiny">Γράψε ελεύθερα τι σου είπε ο πελάτης.</div></div></div><div class="step"><div class="dot ${state.step===3?'active':''}">3</div><div><strong>Έγγραφα</strong><div class="tiny">Το σύστημα οργανώνει τι έχουμε και τι λείπει.</div></div></div><div class="step"><div class="dot ${state.step===4?'active':''}">4</div><div><strong>Αυτοψία</strong><div class="tiny">Μέτρηση, φωτογραφίες, σημειώσεις, επιβεβαίωση.</div></div></div>`;document.getElementById('auditTrail').innerHTML=state.audit.map(x=>`<li>${x}</li>`).join('');document.getElementById('conflictBox').textContent=state.caseFolder?'Αν υπάρχει ασυμφωνία, ο μηχανικός την ελέγχει πριν το κλείσιμο.':'Αν υπάρχει ασυμφωνία, δεν αποφασίζει το σύστημα.'}
+function startNewCase(){setView('newcase', document.querySelector('.nav button:nth-child(2)'));render();toast('New Case opened')}
+function markContacted(){state.contacted=true;state.step=2;state.audit.push('Προσωπική επικοινωνία καταγράφηκε');document.getElementById('contactBox').classList.remove('hidden');document.getElementById('newCaseHint').className='notice green';document.getElementById('newCaseHint').textContent='Επικοινώνησες προσωπικά με τον πελάτη. Συνέχισε με καταγραφή.';render();toast('Contact logged')}
+function autoFillSample(){document.getElementById('caseClient').value='Κων/νος Παπαδόπουλος';document.getElementById('casePhone').value='210-0000000';document.getElementById('caseArea').value='Ιωάννινα';document.getElementById('caseAddress').value='Άγνωστη';document.getElementById('caseType').value='ΗΤΚ + ΠΕΑ';document.getElementById('caseSource').value='Γραμματεία';toast('Sample filled')}
+function analyzeClientText(){const t=(document.getElementById('clientSay').value||'').toLowerCase();const found=[];if(/κληρονομ/i.test(t))found.push('αποδοχή κληρονομιάς');if(/ητκ|htk/.test(t))found.push('ΗΤΚ');if(/πεα|pea/.test(t))found.push('ΠΕΑ');if(/ακίνητ|property/.test(t))found.push('ακίνητο');if(found.length===0)found.push('Χρειάζεται περισσότερη πληροφορία');state.recognized=found;state.step=3;document.getElementById('nextQuestions').innerHTML=found.includes('Χρειάζεται περισσότερη πληροφορία')?'<div class="tiny">Περιέγραψε τι σου είπε ο πελάτης με φυσικό λόγο.</div>':'<ul class="list"><li>Έχετε κρατήσει έγγραφα ή σχέδια από προηγούμενες εργασίες στο ακίνητο;</li><li>Χρειάζεται αυτοψία για επιβεβαίωση;</li></ul>';render();toast('Client text analyzed')}
+function submitChat(){const t=document.getElementById('chatInput');if(!t.value.trim())return;document.getElementById('clientChat').insertAdjacentHTML('beforeend',`<div class="bubble user">${t.value}</div>`);t.value='';toast('Chat submitted')}
+function createCaseFolder(){state.caseFolder=true;state.audit.push('Πραγματικός φάκελος δημιουργήθηκε');state.step=4;document.getElementById('docsSummary').className='notice green';document.getElementById('docsSummary').textContent='Το σύστημα αναγνώρισε τα βασικά έγγραφα και δημιούργησε πραγματικό case folder.';render();toast('Case folder created')}
+function addPhotoNote(){document.getElementById('fieldFeed').insertAdjacentHTML('beforeend','<div class="bubble user">Μηχανικός: [Φωτογραφία] προστέθηκε στο πεδίο.</div>');toast('Photo added')}
+function addMeasureNote(){document.getElementById('fieldFeed').insertAdjacentHTML('beforeend','<div class="bubble user">Μηχανικός: [Μέτρηση] καταγράφηκε.</div>');toast('Measurement added')}
+function addObservationNote(){document.getElementById('fieldFeed').insertAdjacentHTML('beforeend','<div class="bubble user">Μηχανικός: [Σημείωση] προστέθηκε.</div>');toast('Observation added')}
+function saveFieldNotes(){state.fieldNotes=document.getElementById('fieldNotes').value.trim();state.audit.push('Σημειώσεις αυτοψίας καταγράφηκαν');toast('Field notes saved')}
+function flagConflict(){document.getElementById('conflictBox').className='notice red';document.getElementById('conflictBox').textContent='⚠️ Βρέθηκε ασυμφωνία στα στοιχεία του εμβαδού. Χρειάζεται περαιτέρω έλεγχος.';state.audit.push('Ασυμφωνία εμβαδού επισημάνθηκε');toast('Conflict flagged')}
+function resolveCase(){const d=document.getElementById('decisionBox').value.trim();if(!d){toast('Write a decision first');return}state.audit.push('Απόφαση μηχανικού καταγράφηκε');document.getElementById('conflictBox').className='notice green';document.getElementById('conflictBox').textContent='Η απόφαση του μηχανικού καταγράφηκε με audit trail.';render();toast('Decision saved')}
+function finalizeCase(){if(!state.caseFolder||!state.contacted){toast('Complete contact and folder first');return}state.audit.push('Υπόθεση ολοκληρώθηκε');render();toast('Case finalized')}
+function askSenior(){const p=document.getElementById('seniorPrompt');if(!p.value.trim())return;document.getElementById('seniorFeed').insertAdjacentHTML('beforeend',`<div class="bubble user">${p.value}</div><div class="bubble ai">Senior: Θα σε οδηγήσω στο επόμενο ασφαλές βήμα.</div>`);p.value='';toast('Senior replied')}
+window.addEventListener('DOMContentLoaded',()=>{render();document.getElementById('caseClient').value='';document.getElementById('casePhone').value='';document.getElementById('caseArea').value='Ιωάννινα';document.getElementById('caseAddress').value='';document.getElementById('caseType').value='ΗΤΚ';document.getElementById('caseSource').value='Γραμματεία'})
 </script>
 </body>
 </html>
+      
