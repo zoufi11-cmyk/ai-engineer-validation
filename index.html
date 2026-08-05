@@ -7,137 +7,105 @@
 <title>AI Senior Engineer — Case Operating System</title>
 <style>
 :root{
-  --bg:#F4F6F8;--card:#fff;--ink:#1A2332;--muted:#6B7A8F;--line:#E2E8F0;
+  --bg:#F3F5F8;--card:#fff;--ink:#152033;--muted:#64748B;--line:#E2E8F0;
   --navy:#0B1C2E;--blue:#2563EB;--soft:#EFF6FF;
   --ok:#059669;--okBg:#ECFDF5;--warn:#D97706;--warnBg:#FFFBEB;
-  --bad:#DC2626;--badBg:#FEF2F2;--info:#EEF2FF;
+  --bad:#DC2626;--badBg:#FEF2F2;--grey:#94A3B8;
   --r:14px;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--ink);min-height:100dvh;display:flex;justify-content:center}
-#app{width:100%;max-width:430px;min-height:100dvh;background:var(--bg);display:flex;flex-direction:column;position:relative}
+#app{width:100%;max-width:440px;min-height:100dvh;background:var(--bg);display:flex;flex-direction:column}
 button,input,select,textarea{font:inherit}
 button{cursor:pointer;border:none;background:none}
-button:disabled{opacity:.4;cursor:not-allowed}
+button:disabled{opacity:.45;cursor:not-allowed}
 input,select,textarea{width:100%;padding:12px 14px;border:1px solid var(--line);border-radius:10px;background:#fff;font-size:15px}
 input:focus,textarea:focus,select:focus{outline:2px solid var(--blue);outline-offset:0}
 
-/* Top bar */
-.top{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:10}
-.brand{font-weight:800;font-size:14px;color:var(--navy)}
+.top{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:20}
+.brand{font-weight:800;font-size:13px;color:var(--navy);line-height:1.25}
 .brand small{display:block;font-size:10px;font-weight:600;color:var(--muted);letter-spacing:.04em;text-transform:uppercase}
-.scroll{flex:1;overflow:auto;padding:16px}
-.foot{padding:14px 16px;border-top:1px solid var(--line);background:#fff;position:sticky;bottom:0}
+.scroll{flex:1;overflow:auto;padding:16px 16px 28px}
+.foot{padding:12px 16px;border-top:1px solid var(--line);background:#fff;position:sticky;bottom:0}
 
-/* Buttons */
 .btn{width:100%;padding:14px;background:var(--navy);color:#fff;font-weight:700;border-radius:12px;font-size:15px}
 .btn.ghost{background:#fff;color:var(--muted);border:1px solid var(--line)}
 .btn.blue{background:var(--blue)}
 .btn.ok{background:var(--ok)}
-.btn.sm{padding:10px 14px;font-size:13px;width:auto}
+.btn.warn{background:var(--warn);color:#fff}
+.btn.sm{padding:9px 12px;font-size:13px;width:auto;border-radius:10px}
 
-/* Cards */
-.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:16px;margin-bottom:12px}
-.card.tap{cursor:pointer;transition:border-color .15s}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:15px;margin-bottom:11px}
+.card.tap{cursor:pointer}
 .card.tap:active{border-color:var(--blue)}
-.h1{font-size:22px;font-weight:800;margin-bottom:4px}
+.h1{font-size:21px;font-weight:800;margin-bottom:4px}
 .h2{font-size:16px;font-weight:800;margin-bottom:6px}
 .muted{color:var(--muted);font-size:13px;line-height:1.5}
-.label{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.label{font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.sec{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:14px 0 8px}
 
-/* Four questions strip */
-.four{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
-.four .q{background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px}
-.four .q .k{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.four{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.four .q{background:#fff;border:1px solid var(--line);border-radius:12px;padding:11px}
+.four .q .k{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
 .four .q .v{font-size:13px;font-weight:700;margin-top:4px;line-height:1.35}
 
-/* Chips */
-.chip{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:999px;font-size:11px;font-weight:700}
+.chip{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:999px;font-size:11px;font-weight:700}
 .chip.ok{background:var(--okBg);color:var(--ok)}
 .chip.warn{background:var(--warnBg);color:var(--warn)}
 .chip.bad{background:var(--badBg);color:var(--bad)}
-.chip.info{background:var(--info);color:var(--blue)}
-.chip.neutral{background:#F1F5F9;color:var(--muted)}
+.chip.info{background:var(--soft);color:var(--blue)}
+.chip.grey{background:#F1F5F9;color:var(--grey)}
 
-/* Choice buttons */
-.choice{display:block;width:100%;text-align:left;padding:13px 14px;border:1px solid var(--line);border-radius:12px;background:#fff;margin-bottom:8px;font-weight:600;font-size:14px}
+.choice{display:block;width:100%;text-align:left;padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:#fff;margin-bottom:8px;font-weight:600;font-size:14px}
 .choice.on{background:var(--navy);border-color:var(--navy);color:#fff}
-.choice.sm{padding:10px 12px;font-size:13px;display:inline-block;width:auto;margin-right:6px}
+.choice.inline{display:inline-block;width:auto;padding:8px 12px;margin:0 6px 6px 0;font-size:13px}
 
-/* Next action */
-.nsa{background:var(--soft);border:1px solid #BFDBFE;border-radius:var(--r);padding:14px;margin:12px 0}
-.nsa .t{font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--blue);margin-bottom:6px}
+.nsa{background:var(--soft);border:1px solid #BFDBFE;border-radius:var(--r);padding:14px;margin:10px 0}
+.nsa .t{font-size:10px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--blue);margin-bottom:5px}
 .nsa .a{font-weight:800;font-size:15px;line-height:1.35}
 .nsa .why{font-size:13px;color:var(--muted);margin-top:6px;line-height:1.45}
 
-/* AI panel */
-.ai{background:#F8FAFC;border:1px solid var(--line);border-radius:var(--r);padding:14px;margin:12px 0}
-.ai .t{font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.ai{background:#F8FAFC;border:1px solid var(--line);border-radius:var(--r);padding:13px;margin:10px 0}
+.ai .t{font-size:10px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:5px}
 .ai p{font-size:13.5px;line-height:1.5;color:#334155}
 
-/* Hero */
-.hero{background:var(--navy);color:#F8FAFC;padding:28px 18px 24px}
+.hero{background:var(--navy);color:#F8FAFC;padding:26px 18px 22px}
 .hero .tag{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:#93A4B8;font-weight:700}
-.hero h1{font-size:22px;font-weight:800;margin:8px 0 6px}
+.hero h1{font-size:21px;font-weight:800;margin:8px 0 6px}
 .hero p{color:#A8B8CC;font-size:13.5px;line-height:1.5}
 
-/* Lists */
-.row{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
-.item{padding:10px 0;border-bottom:1px solid var(--line);font-size:14px}
+.item{padding:9px 0;border-bottom:1px solid var(--line);font-size:14px;line-height:1.4}
 .item:last-child{border-bottom:none}
-
-/* Progress steps */
-.steps{display:flex;gap:4px;margin-bottom:16px}
-.steps span{flex:1;height:4px;border-radius:2px;background:var(--line)}
-.steps span.on{background:var(--navy)}
-.steps span.done{background:var(--ok)}
-
-/* Toast */
-.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:24px;background:var(--navy);color:#fff;padding:12px 18px;border-radius:12px;font-size:13px;z-index:50;max-width:90%;box-shadow:0 8px 24px rgba(0,0,0,.2)}
-
-/* Empty */
-.empty{text-align:center;padding:32px 16px;color:var(--muted)}
-.empty .icon{font-size:36px;margin-bottom:10px}
-
-/* Section header */
-.sec{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin:16px 0 8px}
-
-.back{font-size:13px;font-weight:700;color:var(--muted);margin-bottom:12px;display:inline-flex;align-items:center;gap:4px}
+.row{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.back{font-size:13px;font-weight:700;color:var(--muted);margin-bottom:12px;display:inline-flex}
+.warnbox{background:var(--warnBg);border:1px solid #FCD34D;border-radius:var(--r);padding:13px;margin:10px 0;font-size:13.5px;line-height:1.45}
+.warnbox b{color:var(--warn)}
+.okbox{background:var(--okBg);border:1px solid #A7F3D0;border-radius:var(--r);padding:13px;margin:10px 0;font-size:13.5px;line-height:1.45}
+.badbox{background:var(--badBg);border:1px solid #FECACA;border-radius:var(--r);padding:13px;margin:10px 0;font-size:13.5px;line-height:1.45}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:22px;background:var(--navy);color:#fff;padding:12px 16px;border-radius:12px;font-size:13px;z-index:50;max-width:90%;box-shadow:0 8px 24px rgba(0,0,0,.2)}
+.empty{text-align:center;padding:28px 12px;color:var(--muted)}
+.steps{display:flex;gap:4px;margin-bottom:14px}
+.steps i{flex:1;height:3px;border-radius:2px;background:var(--line)}
+.steps i.on{background:var(--navy)}
+.steps i.done{background:var(--ok)}
+.check{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--line);font-size:14px}
+.check input{width:18px;height:18px;margin-top:2px;flex-shrink:0}
+.flow{font-size:12px;color:var(--muted);line-height:1.6}
 </style>
 </head>
 <body>
 <div id="app"></div>
 <script>
 (function(){
-/* ========== SAFE STORAGE ========== */
+/* Safe storage (sandbox-friendly) */
 const mem={};
 const store=(function(){
-  try{
-    const k='__ase_t';
-    localStorage.setItem(k,'1');localStorage.removeItem(k);
-    return localStorage;
-  }catch(e){
-    return{
-      getItem:k=>mem[k]??null,
-      setItem:(k,v)=>{mem[k]=String(v)},
-      removeItem:k=>{delete mem[k]}
-    };
-  }
+  try{const k='__t';localStorage.setItem(k,'1');localStorage.removeItem(k);return localStorage;}
+  catch(e){return{getItem:k=>mem[k]??null,setItem:(k,v)=>{mem[k]=String(v)},removeItem:k=>{delete mem[k]}};}
 })();
+const KEY='ase-cos-v1';
 
-const KEY='ase-full-v1';
-
-/* ========== STATE ========== */
-let S={
-  screen:'home',
-  cases:[],
-  cur:null,
-  draft:{},
-  comm:{},
-  assets:{},
-  toast:null,
-  tab:'home'
-};
+let S={screen:'home',cases:[],cur:null,draft:{},comm:{},assets:{},toast:null};
 
 function uid(){return 'c_'+Date.now().toString(36)+Math.random().toString(36).slice(2,5)}
 function load(){try{const r=store.getItem(KEY);if(r){const p=JSON.parse(r);S.cases=p.cases||[]}}catch(e){}}
@@ -145,89 +113,115 @@ function save(){try{store.setItem(KEY,JSON.stringify({cases:S.cases}))}catch(e){
 function cur(){return S.cases.find(c=>c.id===S.cur)||null}
 function toast(m){S.toast=m;render();setTimeout(()=>{S.toast=null;render()},1800)}
 function go(sc){S.screen=sc;render()}
-function openCase(id){S.cur=id;S.screen='case';S.tab='home';render()}
+function openCase(id){S.cur=id;S.screen='case';render()}
 
-/* ========== DOMAIN LOGIC (client-side simulation of Case OS) ========== */
+/* ========== CASE STATE MACHINE (quiet front of strong engine) ========== */
 function buildHome(c){
   const st=c.statement||'';
   const assets=c.assets||{};
-  const known=[];
-  const missing=[];
-  const issues=[];
-
+  const known=[],missing=[],issues=[],blocked=[];
   if(c.clientName) known.push('Πελάτης: '+c.clientName);
-  if(c.phone) known.push('Τηλέφωνο: '+c.phone);
+  if(c.phone) known.push('Τηλ.: '+c.phone);
   if(c.region) known.push('Περιοχή: '+c.region);
   if(c.workType) known.push('Εργασία: '+c.workType);
-  if(st) known.push('Περιγραφή από πελάτη (ισχυρισμός)');
+  if(c.purpose) known.push('Σκοπός: '+c.purpose);
+  if(st) known.push('Ισχυρισμός πελάτη (καταγεγραμμένος)');
 
-  if(assets.title==='HAS') known.push('Τίτλος — έχει δηλωθεί διαθέσιμος');
-  else if(assets.title==='DOES_NOT_HAVE') missing.push('Τίτλος');
-  else if(assets.title==='UNKNOWN'||!assets.title) missing.push('Τίτλος (άγνωστο αν υπάρχει)');
+  function assetLine(key,label){
+    if(assets[key]==='HAS') known.push(label+' — δηλωμένο διαθέσιμο');
+    else if(assets[key]==='DOES_NOT_HAVE') missing.push(label);
+    else missing.push(label+' (UNKNOWN)');
+  }
+  if(Object.keys(assets).length){
+    assetLine('title','Τίτλος');
+    assetLine('kaek','ΚΑΕΚ');
+    assetLine('topo','Τοπογραφικό');
+    assetLine('permit','Οικοδομική άδεια');
+    assetLine('plans','Σχέδια');
+    assetLine('e9','Ε9');
+  } else if(st){
+    missing.push('Τίτλος / ΚΑΕΚ / σχέδια / άδεια (δεν ρωτήθηκε ακόμη)');
+  }
 
-  if(assets.kaek==='HAS') known.push('ΚΑΕΚ — έχει δηλωθεί διαθέσιμος');
-  else if(assets.kaek==='DOES_NOT_HAVE') missing.push('ΚΑΕΚ');
-  else if(assets.kaek==='UNKNOWN'||!assets.kaek) missing.push('ΚΑΕΚ (άγνωστο)');
-
-  if(assets.topo==='HAS') known.push('Τοπογραφικό — έχει δηλωθεί διαθέσιμο');
-  else if(assets.topo==='DOES_NOT_HAVE') missing.push('Τοπογραφικό');
-  else if(assets.topo==='UNKNOWN'||!assets.topo) missing.push('Τοπογραφικό (άγνωστο)');
-
-  if(assets.other==='HAS') known.push('Άλλα έγγραφα — υπάρχουν');
-
-  /* potential issues from client claims — NEVER as facts */
   if(st){
     const low=st.toLowerCase();
     if(/δασικ|forest/.test(low)) issues.push('Αναφερόμενος δασικός χαρακτηρισμός — προς διερεύνηση');
-    if(/δημ[οό]σι|public|ελληνικ/.test(low)) issues.push('Αναφερόμενη εμφάνιση ως Ελληνικό Δημόσιο — προς διερεύνηση');
-    if(/κατοχυρ|ιδιοκτησ|ownership/.test(low)) issues.push('Ιδιοκτησιακό ζήτημα — προς διερεύνηση');
+    if(/δημ[οό]σι|ελληνικ[όο]\s*δημ/.test(low)) issues.push('Αναφερόμενη εμφάνιση ως Ελληνικό Δημόσιο — προς διερεύνηση');
+    if(/αυθα[ιί]ρ|χωρ[ιί]ς\s*άδεια|παράνομ/.test(low)) issues.push('Αναφερόμενη μη νομιμότητα — προς έλεγχο');
+    if(/νομ[ιί]μ/.test(low)&&/πιστε[υύ]|νομ[ιί]ζω|θα\s*ε[ιί]ναι/.test(low)) issues.push('Νομιμότητα δηλωμένη από πελάτη — δεν είναι verified');
+    if(/παλι[οό].*τοπογραφ|τοπογραφ.*παλι/.test(low)||assets.topo==='HAS') issues.push('Παλαιότητα τοπογραφικού / σχεδίων — προς έλεγχο καταλληλότητας');
+  }
+  if(c.fieldNotes){
+    const fl=c.fieldNotes.toLowerCase();
+    if(/διαφορ|απ[οό]κλι|δεν\s*συμφων|αλλαγ/.test(fl))
+      issues.push('Αυτοψία: απόκλιση υφιστάμενης κατάστασης από σχέδια — Conflict ανοιχτό');
   }
 
-  /* stage & next action */
   let stage='Νέα υπόθεση';
   let next='Επικοινώνησε με τον πελάτη';
-  let nextWhy='Χρειάζονται βασικά στοιχεία και περιγραφή του ζητήματος.';
+  let nextWhy='Χρειάζονται βασικά στοιχεία και περιγραφή του τι ζητείται — όχι φόρμα 40 πεδίων.';
+  let protect=null;
 
-  if(st && Object.keys(assets).length===0){
+  if(st && !Object.keys(assets).length){
     stage='Επικοινωνία ολοκληρώθηκε';
     next='Συλλογή διαθέσιμων στοιχείων';
-    nextWhy='Ο πελάτης περιέγραψε το ζήτημα. Τώρα ρώτα τι έγγραφα έχει ήδη.';
+    nextWhy='Ο πελάτης περιέγραψε. Ρώτα τι έχει ήδη (έχει / δεν έχει / δεν γνωρίζει).';
   }
-  if(Object.keys(assets).length>0){
-    stage='Συλλογή αρχικών στοιχείων';
-    next='Έλεγχος διαθέσιμων εγγράφων';
-    nextWhy='Έχεις εικόνα τι υπάρχει. Επόμενο: δες τα έγγραφα — χωρίς να αποφασίσεις ακόμη.';
+  if(Object.keys(assets).length){
+    stage='Αρχικά στοιχεία καταγεγραμμένα';
+    next='Παραλαβή / οργάνωση εγγράφων στον φάκελο';
+    nextWhy='Documents inform. Δεν θεωρούνται ακόμη verified.';
   }
-  if(c.docs && c.docs.length>0){
+  if((c.docs||[]).length){
     stage='Έγγραφα στον φάκελο';
-    next='Προετοιμασία αυτοψίας / επιτόπιου ελέγχου';
-    nextWhy='Τα έγγραφα ενημερώνουν. Η πραγματική κατάσταση επιβεβαιώνεται επιτόπου όπου χρειάζεται.';
+    next='Προετοιμασία & αυτοψία';
+    nextWhy='Field confirms. Σύγκρινε υφιστάμενη κατάσταση με σχέδια όπου χρειάζεται.';
   }
   if(c.fieldDone){
     stage='Αυτοψία καταχωρήθηκε';
-    next='Αξιολόγηση ευρημάτων από τον μηχανικό';
-    nextWhy='Οι παρατηρήσεις είναι καταγεγραμμένες. Η κρίση ανήκει σε εσένα.';
+    next='Αξιολόγηση ευρημάτων — απόφαση μηχανικού';
+    nextWhy='Evidence & observations υπάρχουν. Η κρίση είναι δική σου (Decision = Engineer).';
   }
   if(c.decision){
     stage='Απόφαση μηχανικού καταχωρήθηκε';
-    next='Ολοκλήρωση υπόθεσης (όταν πληρούνται οι προϋποθέσεις)';
-    nextWhy='Υπάρχει τεκμηριωμένη απόφαση. Έλεγξε αν λείπει κάτι κρίσιμο.';
+    next='Έλεγχος gates ολοκλήρωσης';
+    nextWhy='Audit: ποιος / πότε / γιατί. Μην καλείς «ολοκληρωμένο» χωρίς πραγματικές προϋποθέσεις.';
   }
   if(c.completed){
     stage='Ολοκληρωμένη';
     next='—';
-    nextWhy='Η υπόθεση έχει κλείσει με audit trail.';
+    nextWhy='Close-out με ιστορικό. Νέα εργασία στο ίδιο ακίνητο = νέα Case πάνω σε Property memory.';
   }
 
-  return{stage,known,missing,issues,next,nextWhy,st};
+  /* Protect engineer: premature structural work etc. */
+  if(c.workType==='Νέα οικοδομή' && !c.placementValidated && c.prematureDesign){
+    protect='Πριν οριστικοποιήσεις στατικά / ξυλότυπους: η θέση του κτιρίου και οι πολεοδομικοί περιορισμοί δεν έχουν ακόμη πλήρως επικυρωθεί. Προκαταρκτικά σκίτσα OK — τελικά σχέδια όχι ακόμη.';
+    blocked.push('Οριστικοποίηση στατικών πριν validation θέσης');
+  }
+
+  return{stage,known,missing,issues,blocked,next,nextWhy,protect,st};
 }
 
-function aiText(c,h){
-  if(c.completed) return 'Η υπόθεση ολοκληρώθηκε. Το ιστορικό παραμένει διαθέσιμο. Δεν προτείνω αλλαγές χωρίς νέο αίτημα.';
-  if(!c.statement) return 'Ξεκίνα με επικοινωνία με τον πελάτη. Κατέγραψε τι λέει — χωρίς να το μετατρέψεις σε γεγονός.';
-  if(!Object.keys(c.assets||{}).length) return 'Ο πελάτης ανέφερε στοιχεία. Αυτά είναι ισχυρισμοί. Επόμενο ασφαλές βήμα: ρώτα τι έγγραφα έχει ήδη (τίτλος, ΚΑΕΚ, τοπογραφικό).';
-  if(h.issues.length) return 'Υπάρχουν θέματα προς διερεύνηση (όχι ετυμηγορίες). Μην επιλέξεις «νικητή» μεταξύ πηγών πριν τον έλεγχο. Εσύ αποφασίζεις μετά τα στοιχεία.';
-  return 'Από όσα έχουν καταγραφεί, προχωράς οργανωμένα. Documents inform · field confirms. Η τελική κρίση είναι δική σου.';
+function aiLine(c,h){
+  if(c.completed) return 'Η υπόθεση έκλεισε με audit trail. Δεν προτείνω αλλαγές χωρίς νέο αίτημα.';
+  if(h.protect) return h.protect+' Εσύ αποφασίζεις αν συνεχίζεις προκαταρκτικά ή σταματάς.';
+  if(!c.statement) return 'Ξεκίνα από επικοινωνία. Κατέγραψε τι λέει ο πελάτης ως statement — όχι ως fact.';
+  if(!Object.keys(c.assets||{}).length) return 'Ισχυρισμοί καταγράφηκαν. Επόμενο μικρό βήμα: τι έγγραφα έχει ήδη; UNKNOWN ≠ DOES_NOT_HAVE.';
+  if(h.issues.some(i=>/απ[οό]κλι|Conflict/.test(i))) return 'Υπάρχει ασυμφωνία πηγών / πραγματικότητας. Conflict ≠ winner. Μην επιλέξεις «σωστό» m² χωρίς έλεγχο.';
+  if(h.issues.length) return 'Υπάρχουν θέματα προς διερεύνηση — όχι ετυμηγορίες. Documents inform · field confirms · engineer decides.';
+  return 'Προχωράς οργανωμένα. Evidence collected ≠ requirement satisfied. Ρώτα μόνο ό,τι αλλάζει το επόμενο βήμα.';
+}
+
+function stageSteps(c){
+  const steps=['Νέα','Επικοινωνία','Στοιχεία','Έγγραφα','Αυτοψία','Απόφαση','Κλείσιμο'];
+  let idx=0;
+  if(c.statement) idx=1;
+  if(Object.keys(c.assets||{}).length) idx=2;
+  if((c.docs||[]).length) idx=3;
+  if(c.fieldDone) idx=4;
+  if(c.decision) idx=5;
+  if(c.completed) idx=6;
+  return{steps,idx};
 }
 
 /* ========== RENDER ========== */
@@ -243,326 +237,326 @@ function render(){
   else if(S.screen==='field') html=viewField();
   else if(S.screen==='review') html=viewReview();
   else if(S.screen==='done') html=viewDone();
-  else if(S.screen==='dna') html=viewDna();
+  else if(S.screen==='about') html=viewAbout();
+  else if(S.screen==='demo') html=viewDemo();
   root.innerHTML=html+(S.toast?`<div class="toast">${S.toast}</div>`:'');
   bind();
 }
 
-function topBar(title,right=''){
+function top(title,right=''){
   return `<div class="top"><div class="brand">AI Senior Engineer<small>${title}</small></div><div>${right}</div></div>`;
 }
 
-/* ---- HOME ---- */
 function viewHome(){
   const list=[...S.cases].sort((a,b)=>(b.updatedAt||0)-(a.updatedAt||0));
   return `<div class="hero">
     <div class="tag">Case Operating System</div>
     <h1>Οι υποθέσεις μου</h1>
-    <p>Οργάνωσε την υπόθεση. Ξέρε πού είσαι, τι έχεις, τι λείπει και τι κάνεις μετά — χωρίς το σύστημα να αποφασίζει αντί σου.</p>
+    <p>Strong engine. Quiet interface.<br>AI recommends · Engineer decides · Persistence remembers.</p>
   </div>
   <div class="scroll">
-    <button data-go="new" class="card tap" style="border-color:var(--navy);display:flex;gap:12px;align-items:center;width:100%">
-      <div style="width:40px;height:40px;background:var(--navy);color:#fff;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800">+</div>
-      <div style="text-align:left"><div style="font-weight:800">Νέα υπόθεση</div><div class="muted">Πελάτης · περιοχή · είδος εργασίας</div></div>
+    <button data-go="new" class="card tap" style="border-color:var(--navy);width:100%;display:flex;gap:12px;align-items:center">
+      <div style="width:42px;height:42px;background:var(--navy);color:#fff;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800">+</div>
+      <div style="text-align:left"><div style="font-weight:800">Νέα υπόθεση</div><div class="muted">Λίγα πεδία · μετά επικοινωνία</div></div>
     </button>
+    <button data-go="demo" class="btn ghost" style="margin-bottom:12px">Γέμισε demo υπόθεση ΗΤΚ (Παπαδόπουλος)</button>
     <div class="sec">Αποθηκευμένες</div>
     ${list.length?list.map(c=>{
       const h=buildHome(c);
-      const chip=c.completed?'ok':(h.issues.length?'warn':'info');
-      const chipT=c.completed?'ΟΛΟΚΛΗΡΩΜΕΝΗ':(h.issues.length?'ΧΡΕΙΑΖΕΤΑΙ ΕΛΕΓΧΟ':'ΕΝΕΡΓΗ');
+      const chip=c.completed?'ok':(h.protect||h.issues.length?'warn':'info');
+      const label=c.completed?'ΟΛΟΚΛΗΡΩΜΕΝΗ':(h.protect?'ΠΡΟΣΟΧΗ':(h.issues.length?'ΕΛΕΓΧΟΣ':'ΕΝΕΡΓΗ'));
       return `<button data-open="${c.id}" class="card tap" style="width:100%;text-align:left">
         <div class="row">
           <div style="min-width:0">
-            <div style="font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${c.clientName||'Χωρίς όνομα'}</div>
-            <div class="muted">${c.workType||'—'} · ${c.region||c.address||'—'}</div>
-            <div class="muted" style="margin-top:4px">${h.stage}</div>
+            <div style="font-weight:800;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${c.clientName||'Χωρίς όνομα'}</div>
+            <div class="muted">${c.workType||'—'} · ${c.region||'—'}</div>
+            <div class="muted" style="margin-top:3px">${h.stage}</div>
           </div>
-          <span class="chip ${chip}">${chipT}</span>
+          <span class="chip ${chip}">${label}</span>
         </div>
         ${h.next!=='—'?`<div class="muted" style="margin-top:8px">→ ${h.next}</div>`:''}
       </button>`;
-    }).join(''):`<div class="empty"><div class="icon">📋</div>Δεν υπάρχουν ακόμη υποθέσεις.<br>Ξεκίνα με «Νέα υπόθεση».</div>`}
-    <button data-go="dna" class="card tap" style="width:100%;margin-top:8px">
+    }).join(''):`<div class="empty">Δεν υπάρχουν υποθέσεις ακόμη.</div>`}
+    <button data-go="about" class="card tap" style="width:100%;margin-top:8px">
       <div style="font-weight:700;font-size:13px">Τι είναι το προϊόν;</div>
-      <div class="muted">Case OS · DNA · τι δεν είμαστε</div>
+      <div class="muted">DNA · τι δεν είμαστε · North Star</div>
     </button>
   </div>`;
 }
 
-/* ---- NEW CASE ---- */
 function viewNew(){
   const d=S.draft;
   const ok=d.clientName&&d.workType;
-  return `${topBar('Νέα υπόθεση')}
+  const types=['ΗΤΚ','ΠΕΑ','ΕΕΔΜΚ','Τοπογραφικό','Νέα οικοδομή','Ιδιοκτησιακό / χωρικό','Άλλο'];
+  return `${top('Νέα υπόθεση')}
   <div class="scroll">
     <button data-go="home" class="back">← Υποθέσεις</button>
-    <div class="h2">Δημιουργία υπόθεσης</div>
-    <p class="muted" style="margin-bottom:14px">Λίγα πεδία στην αρχή. Τα υπόλοιπα έρχονται όταν χρειάζονται.</p>
-    <div class="label">Πελάτης / Όνομα *</div>
-    <input id="fName" value="${d.clientName||''}" placeholder="Ονοματεπώνυμο ή προσωρινό"/>
-    <div style="height:10px"></div>
+    <div class="h2">Δημιουργία Case</div>
+    <p class="muted" style="margin-bottom:12px">Case-first. Όχι giant form. Progressive disclosure.</p>
+    <div class="label">Πελάτης *</div>
+    <input id="fName" value="${d.clientName||''}" placeholder="Ονοματεπώνυμο"/>
+    <div style="height:8px"></div>
     <div class="label">Τηλέφωνο</div>
     <input id="fPhone" value="${d.phone||''}" placeholder="Προαιρετικό"/>
+    <div style="height:8px"></div>
+    <div class="label">Περιοχή</div>
+    <input id="fRegion" value="${d.region||''}" placeholder="π.χ. Αχαρνές"/>
     <div style="height:10px"></div>
-    <div class="label">Περιοχή / Διεύθυνση</div>
-    <input id="fRegion" value="${d.region||''}" placeholder="π.χ. Αχαρνές, αγροτεμάχιο…"/>
-    <div style="height:12px"></div>
     <div class="label">Είδος εργασίας *</div>
-    <div style="margin-top:6px">
-      ${['ΗΤΚ','ΠΕΑ','Τοπογραφικό','Ιδιοκτησιακό / χωρικό','Άλλο'].map(t=>
-        `<button data-type="${t}" class="choice ${d.workType===t?'on':''}" style="margin-bottom:8px">${t}</button>`
-      ).join('')}
-    </div>
-    <div class="ai"><div class="t">AI Senior</div><p>Δημιούργησε την υπόθεση και μετά μίλησε με τον πελάτη. Δεν ζητάμε ΚΑΕΚ ή σχέδια πριν καταλάβουμε τι συμβαίνει.</p></div>
+    ${types.map(t=>`<button data-type="${t}" class="choice ${d.workType===t?'on':''}">${t}</button>`).join('')}
+    <div class="ai"><div class="t">AI Senior · recommendation</div>
+    <p>Μετά τη δημιουργία: επικοινωνία με πελάτη. Δεν ζητάμε ΚΑΕΚ / άδεια πριν καταλάβουμε την υπόθεση.</p></div>
   </div>
   <div class="foot"><button data-create class="btn" ${ok?'':'disabled'}>Αποθήκευση & συνέχεια →</button></div>`;
 }
 
-/* ---- CLIENT COMMUNICATION ---- */
 function viewComm(){
   const c=cur();if(!c) return viewHome();
-  const text=S.comm.text||c.statement||'';
-  return `${topBar('Επικοινωνία με πελάτη')}
+  const text=S.comm.text!=null?S.comm.text:(c.statement||'');
+  return `${top('Επικοινωνία')}
   <div class="scroll">
     <button data-open="${c.id}" class="back">← Υπόθεση</button>
     <div class="h2">Τι είπε ο πελάτης;</div>
-    <p class="muted" style="margin-bottom:12px">Καταγράφουμε <b>ισχυρισμό</b>, όχι γεγονός. Το σύστημα δεν θα μετατρέψει αυτόματα «φαίνεται δασικό» σε «είναι δασικό».</p>
-    <textarea id="commText" rows="5" placeholder="π.χ. Έχω αγροτεμάχιο με ελιές. Φαίνεται δασικό και εμφανίζεται ως Ελληνικό Δημόσιο. Θέλω να το κατοχυρώσω.">${text}</textarea>
-    <div class="ai" style="margin-top:12px"><div class="t">Πώς αποθηκεύεται</div>
-      <p><b>client_statement</b> — τι ανέφερε<br>
-      <b>potential_issue</b> — θέμα προς διερεύνηση<br>
-      <b>engineer_decision</b> — παραμένει κενό</p>
-    </div>
+    <p class="muted" style="margin-bottom:10px"><b>client_statement ≠ fact.</b> «Φαίνεται δασικό» δεν γίνεται «είναι δασικό».</p>
+    <textarea id="commText" rows="5" placeholder="π.χ. Μονοκατοικία του ’85. Έχω συμβόλαιο και παλιά σχέδια. Νομίζω ότι είναι νόμιμο. Η συμβολαιογράφος θέλει ΗΤΚ.">${text}</textarea>
+    <div class="label" style="margin-top:12px">Σκοπός (προαιρετικά)</div>
+    <input id="fPurpose" value="${c.purpose||S.comm.purpose||''}" placeholder="π.χ. Μεταβίβαση, Exoikonomo, πώληση…"/>
+    <div class="ai" style="margin-top:12px"><div class="t">Αποθήκευση</div>
+    <p>client_statement · known · missing · potential_issue · next_action<br>
+    <b>engineer_decision = null</b> μέχρι πραγματική απόφαση.</p></div>
   </div>
-  <div class="foot"><button data-save-comm class="btn" ${text.trim()?'':'disabled'}>Αποθήκευση επικοινωνίας →</button></div>`;
+  <div class="foot"><button data-save-comm class="btn" ${String(text).trim()?'':'disabled'}>Αποθήκευση επικοινωνίας →</button></div>`;
 }
 
-/* ---- ASSETS (available documents) ---- */
 function viewAssets(){
   const c=cur();if(!c) return viewHome();
   const a=S.assets;
-  const keys=['title','kaek','topo','other'];
-  const labels={title:'Τίτλος / έγγραφο ιδιοκτησίας',kaek:'ΚΑΕΚ',topo:'Τοπογραφικό',other:'Άλλα έγγραφα'};
-  const filled=keys.every(k=>a[k]);
-  return `${topBar('Διαθέσιμα στοιχεία')}
+  const keys=[
+    ['title','Τίτλος / συμβόλαιο'],
+    ['kaek','ΚΑΕΚ'],
+    ['topo','Τοπογραφικό'],
+    ['permit','Οικοδομική άδεια'],
+    ['plans','Αρχιτεκτονικά σχέδια'],
+    ['e9','Ε9']
+  ];
+  const filled=keys.every(([k])=>a[k]);
+  return `${top('Διαθέσιμα στοιχεία')}
   <div class="scroll">
     <button data-open="${c.id}" class="back">← Υπόθεση</button>
     <div class="h2">Τι έχει ήδη ο πελάτης;</div>
-    <p class="muted" style="margin-bottom:14px">Όχι «ανέβασε τα πάντα». Μόνο: έχει / δεν έχει / δεν γνωρίζει.</p>
-    ${keys.map(k=>`
+    <p class="muted" style="margin-bottom:12px">HAS / DOES_NOT_HAVE / UNKNOWN. UNKNOWN ≠ «δεν υπάρχει».</p>
+    ${keys.map(([k,lab])=>`
       <div class="card">
-        <div style="font-weight:700;margin-bottom:10px">${labels[k]}</div>
-        <div>
-          <button data-asset="${k}" data-val="HAS" class="choice sm ${a[k]==='HAS'?'on':''}">Έχει</button>
-          <button data-asset="${k}" data-val="DOES_NOT_HAVE" class="choice sm ${a[k]==='DOES_NOT_HAVE'?'on':''}">Δεν έχει</button>
-          <button data-asset="${k}" data-val="UNKNOWN" class="choice sm ${a[k]==='UNKNOWN'?'on':''}">Δεν γνωρίζει</button>
-        </div>
-      </div>
-    `).join('')}
-    <div class="ai"><div class="t">Σημαντικό</div><p>«Δεν γνωρίζει» ≠ «δεν υπάρχει». Το UNKNOWN μένει UNKNOWN μέχρι να ξεκαθαρίσει.</p></div>
+        <div style="font-weight:700;margin-bottom:8px">${lab}</div>
+        <button data-asset="${k}" data-val="HAS" class="choice inline ${a[k]==='HAS'?'on':''}">Έχει</button>
+        <button data-asset="${k}" data-val="DOES_NOT_HAVE" class="choice inline ${a[k]==='DOES_NOT_HAVE'?'on':''}">Δεν έχει</button>
+        <button data-asset="${k}" data-val="UNKNOWN" class="choice inline ${a[k]==='UNKNOWN'?'on':''}">Δεν γνωρίζει</button>
+      </div>`).join('')}
   </div>
   <div class="foot"><button data-save-assets class="btn" ${filled?'':'disabled'}>Αποθήκευση →</button></div>`;
 }
 
-/* ---- CASE HOME ---- */
 function viewCase(){
   const c=cur();if(!c) return viewHome();
   const h=buildHome(c);
-  return `${topBar(c.clientName||'Υπόθεση', c.completed?`<span class="chip ok">ΟΛΟΚΛΗΡΩΜΕΝΗ</span>`:`<span class="chip info">ΕΝΕΡΓΗ</span>`)}
+  const {steps,idx}=stageSteps(c);
+  return `${top(c.clientName||'Υπόθεση', c.completed?`<span class="chip ok">DONE</span>`:`<span class="chip info">ACTIVE</span>`)}
   <div class="scroll">
     <button data-go="home" class="back">← Υποθέσεις</button>
+    <div class="steps">${steps.map((_,i)=>`<i class="${i<idx?'done':(i===idx?'on':'')}"></i>`).join('')}</div>
     <div class="card">
-      <div class="label">Εργασία</div>
-      <div style="font-weight:800">${c.workType||'—'}</div>
-      <div class="label" style="margin-top:10px">Περιοχή</div>
-      <div>${c.region||c.address||'—'}</div>
-      ${c.phone?`<div class="label" style="margin-top:10px">Τηλέφωνο</div><div>${c.phone}</div>`:''}
+      <div class="label">Case</div>
+      <div style="font-weight:800">${c.workType||'—'}${c.purpose?' · '+c.purpose:''}</div>
+      <div class="muted" style="margin-top:4px">${c.region||'—'}${c.phone?' · '+c.phone:''}</div>
     </div>
 
     <div class="four">
       <div class="q"><div class="k">Πού βρίσκομαι</div><div class="v">${h.stage}</div></div>
-      <div class="q"><div class="k">Τι κάνω τώρα</div><div class="v">${h.next==='—'?'—':h.next}</div></div>
-      <div class="q"><div class="k">Τι έχω</div><div class="v">${h.known.length?h.known.length+' στοιχεία':'Λίγα / τίποτα ακόμη'}</div></div>
+      <div class="q"><div class="k">Τι κάνω τώρα</div><div class="v">${h.next}</div></div>
+      <div class="q"><div class="k">Τι έχω</div><div class="v">${h.known.length?h.known.length+' στοιχεία':'Λίγα'}</div></div>
       <div class="q"><div class="k">Τι λείπει</div><div class="v">${h.missing.length?h.missing.length+' ανοιχτά':'—'}</div></div>
     </div>
 
-    ${h.next!=='—'||!c.completed?`<div class="nsa">
-      <div class="t">Επόμενο ασφαλές βήμα</div>
+    ${h.protect?`<div class="warnbox"><b>⚠ Προστασία μηχανικού</b><br>${h.protect}</div>`:''}
+
+    ${h.next!=='—'?`<div class="nsa">
+      <div class="t">Next Safe Action</div>
       <div class="a">${h.next}</div>
       <div class="why">${h.nextWhy}</div>
     </div>`:''}
 
-    <div class="ai"><div class="t">AI Senior · recommendation only</div><p>${aiText(c,h)}</p></div>
+    <div class="ai"><div class="t">AI Senior · recommendation only</div><p>${aiLine(c,h)}</p></div>
 
-    ${h.st?`<div class="card"><div class="label">Ισχυρισμός πελάτη (όχι γεγονός)</div>
+    ${h.st?`<div class="card"><div class="label">Client statement (όχι fact)</div>
       <div style="font-size:14px;line-height:1.45">«${h.st}»</div></div>`:''}
 
-    ${h.known.length?`<div class="card"><div class="label">Τι έχω</div>
-      ${h.known.map(x=>`<div class="item">🟢 ${x}</div>`).join('')}</div>`:''}
-
-    ${h.missing.length?`<div class="card"><div class="label">Τι λείπει</div>
-      ${h.missing.map(x=>`<div class="item">⚪ ${x}</div>`).join('')}</div>`:''}
-
-    ${h.issues.length?`<div class="card" style="border-color:#FCD34D;background:var(--warnBg)"><div class="label">Προς διερεύνηση (όχι ετυμηγορία)</div>
-      ${h.issues.map(x=>`<div class="item">🟡 ${x}</div>`).join('')}</div>`:''}
+    ${h.known.length?`<div class="card"><div class="label">Τι έχω</div>${h.known.map(x=>`<div class="item">🟢 ${x}</div>`).join('')}</div>`:''}
+    ${h.missing.length?`<div class="card"><div class="label">Τι λείπει</div>${h.missing.map(x=>`<div class="item">⚪ ${x}</div>`).join('')}</div>`:''}
+    ${h.issues.length?`<div class="card" style="background:var(--warnBg);border-color:#FCD34D"><div class="label">Προς διερεύνηση ≠ verdict</div>${h.issues.map(x=>`<div class="item">🟡 ${x}</div>`).join('')}</div>`:''}
+    ${h.blocked.length?`<div class="card" style="background:var(--badBg)"><div class="label">Blocked (dependency)</div>${h.blocked.map(x=>`<div class="item">🔴 ${x}</div>`).join('')}</div>`:''}
 
     <div class="sec">Ενέργειες</div>
     ${!c.statement?`<button data-go="comm" class="btn" style="margin-bottom:8px">Επικοινωνία με πελάτη</button>`:''}
     ${c.statement&&!Object.keys(c.assets||{}).length?`<button data-go="assets" class="btn" style="margin-bottom:8px">Συλλογή διαθέσιμων στοιχείων</button>`:''}
-    <button data-go="docs" class="btn ghost" style="margin-bottom:8px">Τεχνικός φάκελος / έγγραφα</button>
+    <button data-go="docs" class="btn ghost" style="margin-bottom:8px">Έγγραφα / φάκελος</button>
     <button data-go="field" class="btn ghost" style="margin-bottom:8px">Αυτοψία / Field</button>
-    <button data-go="review" class="btn ghost" style="margin-bottom:8px">Έλεγχος & απόφαση μηχανικού</button>
-    ${!c.completed?`<button data-go="done" class="btn ghost">Ολοκλήρωση</button>`:''}
+    <button data-go="review" class="btn ghost" style="margin-bottom:8px">Finding · Decision · Gate</button>
+    ${c.workType==='Νέα οικοδομή'&&!c.completed?`<button data-premature class="btn ghost" style="margin-bottom:8px">⚠ Προσομοίωση: «άρχισα ξυλότυπους»</button>`:''}
+    ${!c.completed?`<button data-go="done" class="btn ghost">Ολοκλήρωση / Close-out</button>`:''}
   </div>`;
 }
 
-/* ---- DOCS ---- */
 function viewDocs(){
   const c=cur();if(!c) return viewHome();
   const docs=c.docs||[];
-  return `${topBar('Τεχνικός φάκελος')}
+  return `${top('Έγγραφα')}
   <div class="scroll">
     <button data-open="${c.id}" class="back">← Υπόθεση</button>
-    <div class="h2">Έγγραφα</div>
-    <p class="muted" style="margin-bottom:12px">Upload ≠ verified. Τα έγγραφα ενημερώνουν τη διαδικασία· δεν αντικαθιστούν την κρίση σου.</p>
+    <div class="h2">Τεχνικός φάκελος</div>
+    <p class="muted" style="margin-bottom:10px">Document exists ≠ document applicable / correct. Upload ≠ verified.</p>
     <div class="card" style="border-style:dashed;text-align:center">
-      <input type="file" id="fileIn" multiple accept=".pdf,.jpg,.jpeg,.png,.dwg,.dxf,.doc,.docx"/>
-      <div class="muted" style="margin-top:8px">PDF · εικόνες · CAD</div>
+      <input type="file" id="fileIn" multiple accept=".pdf,.jpg,.jpeg,.png,.dwg,.dxf"/>
+      <div class="muted" style="margin-top:6px">PDF · εικόνες · CAD</div>
     </div>
     ${docs.length?docs.map((d,i)=>`<div class="card row">
-      <div style="min-width:0"><div style="font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${d.name}</div>
+      <div style="min-width:0"><div style="font-weight:700">${d.name}</div>
       <div class="muted">${d.kb} KB · ${d.kind} · προς έλεγχο</div></div>
       <button data-rm="${i}" style="color:var(--muted);font-size:18px">×</button>
-    </div>`).join(''):`<div class="card muted">Δεν έχουν προστεθεί αρχεία ακόμη.</div>`}
-    <div class="ai"><div class="t">Κανόνας</div><p>Documents inform → Field confirms. Αν Ε9 και σχέδιο διαφωνούν, δεν επιλέγουμε νικητή αυτόματα.</p></div>
+    </div>`).join(''):`<div class="card muted">Κενός φάκελος.</div>`}
+    <div class="ai"><div class="t">Background completion model</div>
+    <p>Η επίσημη διαδικασία (π.χ. πλατφόρμα ΗΤΚ) μένει στο παρασκήνιο. Εσύ βλέπεις guidance → work → evidence → validation — όχι ερωτηματολόγιο φόρμας.</p></div>
   </div>
-  <div class="foot"><button data-open="${c.id}" class="btn ghost">Πίσω στην υπόθεση</button></div>`;
+  <div class="foot"><button data-open="${c.id}" class="btn ghost">Πίσω</button></div>`;
 }
 
-/* ---- FIELD ---- */
 function viewField(){
   const c=cur();if(!c) return viewHome();
   const notes=c.fieldNotes||'';
   const checks=c.fieldChecks||{};
-  const items=['Εξωτερική κατάσταση','Πρόσβαση / θέση','Χρήσεις χώρων','Διαρρύθμιση','Κρίσιμες μετρήσεις','Σύγκριση με σχέδια','Φωτογραφική τεκμηρίωση'];
-  return `${topBar('Αυτοψία')}
+  const items=[
+    'Ταυτοποίηση κτιρίου / θέση',
+    'Εξωτερική κατάσταση',
+    'Χρήσεις χώρων',
+    'Σύγκριση με διαθέσιμα σχέδια',
+    'Κρίσιμες μετρήσεις',
+    'Αποκλίσεις / παρατηρήσεις',
+    'Φωτογραφική τεκμηρίωση'
+  ];
+  return `${top('Αυτοψία')}
   <div class="scroll">
     <button data-open="${c.id}" class="back">← Υπόθεση</button>
-    <div class="h2">Field / Αυτοψία</div>
-    <p class="muted" style="margin-bottom:12px">Ο μηχανικός πηγαίνει στο ακίνητο. Καταγράφει πραγματική κατάσταση — όχι chatbot checklist χωρίς νόημα.</p>
+    <div class="h2">Field Workspace</div>
+    <p class="muted" style="margin-bottom:10px">Photo ≠ completed inspection. Evidence collected ≠ requirement satisfied.</p>
     <div class="card">
-      <div class="label">Checklist</div>
       ${items.map((it,i)=>`
-        <label style="display:flex;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line);font-size:14px">
-          <input type="checkbox" data-chk="${i}" ${checks[i]?'checked':''} style="width:18px;height:18px"/>
-          ${it}
-        </label>
+        <label class="check"><input type="checkbox" data-chk="${i}" ${checks[i]?'checked':''}/> <span>${it}</span></label>
       `).join('')}
     </div>
-    <div class="label">Σημειώσεις / παρατηρήσεις</div>
-    <textarea id="fieldNotes" rows="4" placeholder="Τι είδες; Τι διαφέρει από τα σχέδια;">${notes}</textarea>
-    <div class="label" style="margin-top:12px">Φωτογραφίες (προσομοίωση)</div>
+    <div class="label">Παρατηρήσεις / υφιστάμενη κατάσταση</div>
+    <textarea id="fieldNotes" rows="4" placeholder="π.χ. Η κάτοψη δείχνει αποθήκη· στην πράξη χρησιμοποιείται ως δωμάτιο. Άνοιγμα ανατολικής όψης διαφορετικό.">${notes}</textarea>
+    <div class="label" style="margin-top:10px">Φωτογραφίες</div>
     <input type="file" id="photoIn" accept="image/*" multiple/>
-    <div class="muted" style="margin-top:6px">${(c.photos||[]).length} φωτογραφία/ες στον φάκελο</div>
-    <div class="ai" style="margin-top:12px"><div class="t">AI Senior</div><p>Κατέγραψε αποκλίσεις ως παρατηρήσεις. Μην τις βαφτίσεις «αυθαίρετο» πριν την αξιολόγησή σου.</p></div>
+    <div class="muted" style="margin-top:4px">${(c.photos||[]).length} στον φάκελο</div>
+    <div class="ai" style="margin-top:10px"><div class="t">AI Senior</div>
+    <p>Κατέγραψε αποκλίσεις ως observations. Μην τις βαφτίσεις «αυθαίρετο» πριν την απόφασή σου.</p></div>
   </div>
   <div class="foot"><button data-save-field class="btn">Αποθήκευση αυτοψίας →</button></div>`;
 }
 
-/* ---- REVIEW / DECISION ---- */
 function viewReview(){
   const c=cur();if(!c) return viewHome();
   const h=buildHome(c);
-  return `${topBar('Έλεγχος & απόφαση')}
+  return `${top('Finding · Decision')}
   <div class="scroll">
     <button data-open="${c.id}" class="back">← Υπόθεση</button>
     <div class="h2">Έλεγχος μηχανικού</div>
-    <p class="muted" style="margin-bottom:12px">Εδώ παίρνεις εσύ την απόφαση. Το AI μόνο οργανώνει και προτείνει.</p>
+    <p class="muted" style="margin-bottom:10px">Evidence → Finding → <b>Engineer Decision</b>. Conflict ≠ winner.</p>
 
     ${h.issues.length?`<div class="card" style="background:var(--warnBg);border-color:#FCD34D">
-      <div class="label">Ανοιχτά προς διερεύνηση</div>
+      <div class="label">Conflicts / issues</div>
       ${h.issues.map(x=>`<div class="item">🟡 ${x}</div>`).join('')}
-    </div>`:''}
+    </div>`:`<div class="card muted">Δεν έχουν επισημανθεί ανοιχτά issues ακόμη.</div>`}
 
     <div class="card">
-      <div class="label">Παράδειγμα ασυμφωνίας (demo)</div>
-      <div class="item">Ε9 / δήλωση: —</div>
-      <div class="item">Σχέδιο: —</div>
-      <div class="item">Αυτοψία: ${(c.fieldNotes||'').slice(0,80)||'—'}</div>
-      <div class="muted" style="margin-top:8px">Conflict ≠ winner. Δεν επιλέγουμε αυτόματα σωστό εμβαδόν.</div>
+      <div class="label">Finding (τεχνική διαπίστωση ≠ legal verdict)</div>
+      <textarea id="findingText" rows="3" placeholder="π.χ. Διαπιστώθηκε διαφοροποίηση χρήσης πίσω χώρου σε σχέση με διαθέσιμη κάτοψη.">${c.finding||''}</textarea>
     </div>
 
     <div class="label">Απόφαση μηχανικού (υποχρεωτική αιτιολογία)</div>
-    <textarea id="decText" rows="4" placeholder="Τι αποφασίζεις και γιατί…">${c.decision||''}</textarea>
+    <textarea id="decText" rows="4" placeholder="Τι αποφασίζεις, με βάση ποια στοιχεία, τι επηρεάζει downstream…">${c.decision||''}</textarea>
 
-    <div class="ai" style="margin-top:12px"><div class="t">AI Senior</div><p>${aiText(c,h)}<br><br><b>Εσύ αποφασίζεις.</b></p></div>
+    <div class="ai" style="margin-top:10px"><div class="t">AI recommends · you decide</div>
+    <p>${aiLine(c,h)}</p></div>
   </div>
   <div class="foot"><button data-save-dec class="btn">Καταχώριση απόφασης →</button></div>`;
 }
 
-/* ---- COMPLETION ---- */
 function viewDone(){
   const c=cur();if(!c) return viewHome();
-  const h=buildHome(c);
   const can=!!c.decision;
-  return `${topBar('Ολοκλήρωση')}
+  return `${top('Close-out')}
   <div class="scroll">
     <button data-open="${c.id}" class="back">← Υπόθεση</button>
-    <div class="h2">Ολοκλήρωση υπόθεσης</div>
-    <p class="muted" style="margin-bottom:12px">Δεν κλείνει επειδή πάτησες κουμπί. Χρειάζεται απόφαση μηχανικού και εικόνα φακέλου.</p>
+    <div class="h2">Ολοκλήρωση</div>
+    <p class="muted" style="margin-bottom:10px">No fake completion. Gate = πραγματικές προϋποθέσεις.</p>
     <div class="card">
-      <div class="item">${c.statement?'🟢':'⚪'} Επικοινωνία με πελάτη</div>
-      <div class="item">${Object.keys(c.assets||{}).length?'🟢':'⚪'} Διαθέσιμα στοιχεία</div>
-      <div class="item">${(c.docs||[]).length?'🟢':'⚪'} Έγγραφα στον φάκελο</div>
-      <div class="item">${c.fieldDone?'🟢':'⚪'} Αυτοψία</div>
-      <div class="item">${c.decision?'🟢':'⚪'} Απόφαση μηχανικού</div>
+      <div class="item">${c.statement?'🟢':'⚪'} Client communication</div>
+      <div class="item">${Object.keys(c.assets||{}).length?'🟢':'⚪'} Document availability</div>
+      <div class="item">${(c.docs||[]).length?'🟢':'⚪'} Documents in folder</div>
+      <div class="item">${c.fieldDone?'🟢':'⚪'} Field / αυτοψία</div>
+      <div class="item">${c.finding?'🟢':'⚪'} Finding (αν υπήρχε)</div>
+      <div class="item">${c.decision?'🟢':'⚪'} Engineer decision + reason</div>
     </div>
-    ${!can?`<div class="card" style="background:var(--badBg);border-color:#FECACA">
-      <b style="color:var(--bad)">Δεν μπορεί ακόμη να ολοκληρωθεί</b>
-      <div class="muted" style="margin-top:6px">Λείπει τεκμηριωμένη απόφαση μηχανικού.</div>
-    </div>`:`<div class="card" style="background:var(--okBg);border-color:#A7F3D0">
-      <b style="color:var(--ok)">Προϋποθέσεις για κλείσιμο: OK (demo)</b>
-      <div class="muted" style="margin-top:6px">Σε παραγωγή θα ελέγχονται gates workflow ΗΤΚ.</div>
-    </div>`}
-    <div class="ai"><div class="t">AI Senior</div><p>Μετά το κλείσιμο το ιστορικό μένει. Νέα εργασία στο ίδιο ακίνητο μπορεί να αξιοποιήσει μνήμη — όχι τυφλά VERIFIED.</p></div>
+    ${!can?`<div class="badbox"><b>Gate FAIL</b><br>Χωρίς τεκμηριωμένη απόφαση μηχανικού δεν κλείνει η υπόθεση.</div>`
+      :`<div class="okbox"><b>Gate PASS (demo)</b><br>Σε production: verified rules + required evidence + no blocking conflict χωρίς decision.</div>`}
+    <div class="ai"><div class="t">Close-out</div>
+    <p>Physical work / files ≠ complete. Final inspection, evidence, submissions, handover όπου εφαρμόζονται.</p></div>
   </div>
   <div class="foot"><button data-complete class="btn ok" ${can?'':'disabled'}>Ολοκλήρωση υπόθεσης</button></div>`;
 }
 
-/* ---- DNA / ABOUT ---- */
-function viewDna(){
-  return `${topBar('Το προϊόν')}
+function viewAbout(){
+  return `${top('Προϊόν')}
   <div class="scroll">
-    <button data-go="home" class="back">← Αρχική</div>
-    <div class="h1">AI Senior Engineer</div>
-    <p class="muted" style="margin-bottom:16px">Case Operating System για πολιτικούς μηχανικούς.</p>
+    <button data-go="home" class="back">← Αρχική</button>
+    <div class="h1">Case Operating System</div>
+    <p class="muted" style="margin-bottom:12px">για πολιτικούς μηχανικούς</p>
     <div class="card">
-      <div class="h2">Υπόσχεση</div>
-      <p style="font-size:14px;line-height:1.55">Ανοίγεις υπόθεση και ξέρεις <b>πού είσαι, τι έχεις, τι λείπει, τι ελέγχεις, τι κάνεις μετά</b> — χωρίς το σύστημα να αποφασίζει ή να υπογράφει αντί σου.</p>
+      <div class="h2">North Star</div>
+      <p style="font-size:14px;line-height:1.55">AI recommends · Engineer decides · Persistence remembers · Evidence supports · Audit proves · Interface shows the <b>next safe step</b>.</p>
     </div>
     <div class="card">
       <div class="h2">Δεν είμαστε</div>
-      <div class="item">✗ Chatbot</div>
-      <div class="item">✗ Document generator</div>
-      <div class="item">✗ Νομική μηχανή που αποφασίζει</div>
+      <div class="item">✗ Chatbot-first</div>
       <div class="item">✗ Αυτόνομος μηχανικός</div>
+      <div class="item">✗ Νομική μηχανή που αποφασίζει</div>
+      <div class="item">✗ Fake progress / fake completion</div>
     </div>
     <div class="card">
       <div class="h2">DNA</div>
-      <div class="item">Case-first · Engineer-first</div>
-      <div class="item">Evidence ≠ truth</div>
-      <div class="item">Conflict ≠ winner</div>
-      <div class="item">Finding ≠ verdict</div>
-      <div class="item">Decision = Engineer</div>
-      <div class="item">AI = recommendation only</div>
+      <div class="item">Case-first · Evidence-first · Persistence-first</div>
+      <div class="item">Evidence ≠ truth · Conflict ≠ winner</div>
+      <div class="item">Finding ≠ verdict · Decision = Engineer</div>
       <div class="item">Documents inform · Field confirms</div>
-      <div class="item">Progressive disclosure</div>
+      <div class="item">Protect from premature work</div>
+      <div class="item">Strong engine · Quiet interface</div>
     </div>
     <div class="card">
-      <div class="h2">Πρώτο vertical</div>
-      <p class="muted">ΗΤΚ ως live proof. ΠΕΑ / Τοπογραφικό / Άδειες αργότερα — ίδια μηχανή, όχι νέα apps.</p>
+      <div class="h2">Αλυσίδα</div>
+      <div class="flow">Case → Evidence → Conflict → Finding → Decision → Gate → Audit</div>
     </div>
-    <div class="ai"><div class="t">Source of truth</div><p>Στο πραγματικό προϊόν: PostgreSQL → Application → Domain. Αυτό το HTML είναι επίδειξη φιλοσοφίας, όχι production backend.</p></div>
+    <div class="ai"><div class="t">Αυτό το HTML</div>
+    <p>Επίδειξη φιλοσοφίας & ροής. Production: Domain → Application → PostgreSQL → API → Mobile. Hard gate: No PG PASS → No Mobile v0.1.</p></div>
+  </div>`;
+}
+
+function viewDemo(){
+  return `${top('Demo')}
+  <div class="scroll">
+    <button data-go="home" class="back">← Αρχική</button>
+    <div class="h2">Demo ΗΤΚ</div>
+    <p class="muted">Δημιουργεί υπόθεση Παπαδόπουλος / Αχαρνές / ΗΤΚ με έτοιμη επικοινωνία για να τρέξεις γρήγορα τη ροή.</p>
+    <button data-seed class="btn" style="margin-top:12px">Δημιουργία demo υπόθεσης</button>
   </div>`;
 }
 
@@ -570,7 +564,7 @@ function viewDna(){
 function bind(){
   document.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>{
     if(b.dataset.go==='new') S.draft={};
-    if(b.dataset.go==='comm') S.comm={text:(cur()||{}).statement||''};
+    if(b.dataset.go==='comm'){S.comm={text:(cur()||{}).statement||'',purpose:(cur()||{}).purpose||''};}
     if(b.dataset.go==='assets') S.assets=Object.assign({},(cur()||{}).assets||{});
     go(b.dataset.go);
   });
@@ -578,56 +572,42 @@ function bind(){
   document.querySelectorAll('[data-type]').forEach(b=>b.onclick=()=>{S.draft.workType=b.dataset.type;render()});
 
   const fName=document.getElementById('fName');
-  if(fName) fName.oninput=e=>{S.draft.clientName=e.target.value;const ok=S.draft.clientName&&S.draft.workType;const btn=document.querySelector('[data-create]');if(btn)btn.disabled=!ok};
+  if(fName) fName.oninput=e=>{S.draft.clientName=e.target.value;syncCreate()};
   const fPhone=document.getElementById('fPhone');
   if(fPhone) fPhone.oninput=e=>{S.draft.phone=e.target.value};
   const fRegion=document.getElementById('fRegion');
   if(fRegion) fRegion.oninput=e=>{S.draft.region=e.target.value};
+  function syncCreate(){const ok=S.draft.clientName&&S.draft.workType;const btn=document.querySelector('[data-create]');if(btn)btn.disabled=!ok}
 
   const create=document.querySelector('[data-create]');
   if(create) create.onclick=()=>{
     if(!(S.draft.clientName&&S.draft.workType)) return;
-    const id=uid();const now=Date.now();
+    const id=uid(),now=Date.now();
     S.cases.push({
-      id,
-      clientName:S.draft.clientName.trim(),
-      phone:(S.draft.phone||'').trim(),
-      region:(S.draft.region||'').trim(),
-      workType:S.draft.workType,
-      statement:'',
-      assets:{},
-      docs:[],
-      photos:[],
-      fieldNotes:'',
-      fieldChecks:{},
-      fieldDone:false,
-      decision:'',
-      completed:false,
-      createdAt:now,
-      updatedAt:now
+      id,clientName:S.draft.clientName.trim(),phone:(S.draft.phone||'').trim(),region:(S.draft.region||'').trim(),
+      workType:S.draft.workType,purpose:'',statement:'',assets:{},docs:[],photos:[],
+      fieldNotes:'',fieldChecks:{},fieldDone:false,finding:'',decision:'',
+      completed:false,placementValidated:false,prematureDesign:false,createdAt:now,updatedAt:now
     });
-    save();S.cur=id;S.draft={};S.screen='comm';S.comm={text:''};toast('Η υπόθεση αποθηκεύτηκε');render();
+    save();S.cur=id;S.draft={};S.comm={text:''};S.screen='comm';toast('Case αποθηκεύτηκε');render();
   };
 
   const ct=document.getElementById('commText');
   if(ct) ct.oninput=e=>{S.comm.text=e.target.value;const btn=document.querySelector('[data-save-comm]');if(btn)btn.disabled=!e.target.value.trim()};
+  const fp=document.getElementById('fPurpose');
+  if(fp) fp.oninput=e=>{S.comm.purpose=e.target.value};
   const sc=document.querySelector('[data-save-comm]');
   if(sc) sc.onclick=()=>{
     const c=cur();if(!c) return;
     c.statement=(S.comm.text||'').trim();
-    c.updatedAt=Date.now();
-    save();toast('Επικοινωνία καταγράφηκε (ισχυρισμός)');openCase(c.id);
+    c.purpose=(S.comm.purpose||c.purpose||'').trim();
+    c.updatedAt=Date.now();save();toast('Statement καταγράφηκε (όχι fact)');openCase(c.id);
   };
 
-  document.querySelectorAll('[data-asset]').forEach(b=>b.onclick=()=>{
-    S.assets[b.dataset.asset]=b.dataset.val;render();
-  });
+  document.querySelectorAll('[data-asset]').forEach(b=>b.onclick=()=>{S.assets[b.dataset.asset]=b.dataset.val;render()});
   const sa=document.querySelector('[data-save-assets]');
   if(sa) sa.onclick=()=>{
-    const c=cur();if(!c) return;
-    c.assets=Object.assign({},S.assets);
-    c.updatedAt=Date.now();
-    save();toast('Διαθέσιμα στοιχεία καταγράφηκαν');openCase(c.id);
+    const c=cur();if(!c) return;c.assets=Object.assign({},S.assets);c.updatedAt=Date.now();save();toast('Availability αποθηκεύτηκε');openCase(c.id);
   };
 
   const fi=document.getElementById('fileIn');
@@ -638,45 +618,46 @@ function bind(){
       if(/\.pdf$/i.test(f.name)) kind='PDF';
       else if(/\.(dwg|dxf)$/i.test(f.name)) kind='CAD';
       else if(/\.(jpe?g|png)$/i.test(f.name)) kind='Εικόνα';
-      c.docs=c.docs||[];
-      c.docs.push({name:f.name,kb:Math.max(1,Math.round(f.size/1024)),kind});
+      c.docs=c.docs||[];c.docs.push({name:f.name,kb:Math.max(1,Math.round(f.size/1024)),kind});
     });
-    c.updatedAt=Date.now();save();toast('Αρχεία στον φάκελο');render();
+    c.updatedAt=Date.now();save();toast('Έγγραφα στον φάκελο');render();
   };
-  document.querySelectorAll('[data-rm]').forEach(b=>b.onclick=()=>{
-    const c=cur();if(!c) return;c.docs.splice(+b.dataset.rm,1);c.updatedAt=Date.now();save();render();
-  });
+  document.querySelectorAll('[data-rm]').forEach(b=>b.onclick=()=>{const c=cur();if(!c)return;c.docs.splice(+b.dataset.rm,1);c.updatedAt=Date.now();save();render()});
 
-  document.querySelectorAll('[data-chk]').forEach(b=>b.onchange=e=>{
-    const c=cur();if(!c) return;c.fieldChecks=c.fieldChecks||{};c.fieldChecks[b.dataset.chk]=e.target.checked;
-  });
+  document.querySelectorAll('[data-chk]').forEach(b=>b.onchange=e=>{const c=cur();if(!c)return;c.fieldChecks=c.fieldChecks||{};c.fieldChecks[b.dataset.chk]=e.target.checked});
   const fn=document.getElementById('fieldNotes');
-  if(fn) fn.oninput=e=>{const c=cur();if(c) c.fieldNotes=e.target.value};
+  if(fn) fn.oninput=e=>{const c=cur();if(c)c.fieldNotes=e.target.value};
   const pi=document.getElementById('photoIn');
-  if(pi) pi.onchange=e=>{
-    const c=cur();if(!c) return;
-    c.photos=c.photos||[];
-    Array.from(e.target.files||[]).forEach(f=>c.photos.push({name:f.name}));
-    c.updatedAt=Date.now();save();toast('Φωτογραφίες προστέθηκαν');render();
-  };
+  if(pi) pi.onchange=e=>{const c=cur();if(!c)return;c.photos=c.photos||[];Array.from(e.target.files||[]).forEach(f=>c.photos.push({name:f.name}));c.updatedAt=Date.now();save();toast('Φωτογραφίες');render()};
   const sf=document.querySelector('[data-save-field]');
-  if(sf) sf.onclick=()=>{
-    const c=cur();if(!c) return;
-    c.fieldDone=true;c.updatedAt=Date.now();save();toast('Αυτοψία καταχωρήθηκε');openCase(c.id);
-  };
+  if(sf) sf.onclick=()=>{const c=cur();if(!c)return;c.fieldDone=true;c.updatedAt=Date.now();save();toast('Αυτοψία καταχωρήθηκε');openCase(c.id)};
 
   const sd=document.querySelector('[data-save-dec]');
   if(sd) sd.onclick=()=>{
     const c=cur();if(!c) return;
     const t=(document.getElementById('decText')||{}).value||'';
-    if(!t.trim()){toast('Απαιτείται αιτιολογία');return;}
-    c.decision=t.trim();c.updatedAt=Date.now();save();toast('Απόφαση μηχανικού καταχωρήθηκε');openCase(c.id);
+    const f=(document.getElementById('findingText')||{}).value||'';
+    if(!t.trim()){toast('Απαιτείται αιτιολογία απόφασης');return;}
+    c.decision=t.trim();c.finding=(f||'').trim();c.updatedAt=Date.now();save();toast('Decision + audit (demo)');openCase(c.id);
   };
 
   const cp=document.querySelector('[data-complete]');
-  if(cp) cp.onclick=()=>{
-    const c=cur();if(!c||!c.decision) return;
-    c.completed=true;c.updatedAt=Date.now();save();toast('Η υπόθεση ολοκληρώθηκε');openCase(c.id);
+  if(cp) cp.onclick=()=>{const c=cur();if(!c||!c.decision)return;c.completed=true;c.updatedAt=Date.now();save();toast('Case closed');openCase(c.id)};
+
+  const pr=document.querySelector('[data-premature]');
+  if(pr) pr.onclick=()=>{const c=cur();if(!c)return;c.prematureDesign=true;c.updatedAt=Date.now();save();toast('Προστασία ενεργοποιήθηκε');render()};
+
+  const seed=document.querySelector('[data-seed]');
+  if(seed) seed.onclick=()=>{
+    const id=uid(),now=Date.now();
+    S.cases.push({
+      id,clientName:'Κωνσταντίνος Παπαδόπουλος',phone:'6912345678',region:'Αχαρνές',
+      workType:'ΗΤΚ',purpose:'Μεταβίβαση',
+      statement:'Μονοκατοικία περίπου 1985. Έχω συμβόλαιο, παλιό τοπογραφικό και σχέδια. Νομίζω ότι είναι νόμιμο. Η συμβολαιογράφος θέλει ΗΤΚ.',
+      assets:{},docs:[],photos:[],fieldNotes:'',fieldChecks:{},fieldDone:false,finding:'',decision:'',
+      completed:false,placementValidated:false,prematureDesign:false,createdAt:now,updatedAt:now
+    });
+    save();S.cur=id;toast('Demo ΗΤΚ έτοιμο');openCase(id);
   };
 }
 
